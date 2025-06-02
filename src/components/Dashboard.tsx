@@ -1,16 +1,15 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { RotateCcw, TrendingUp, Users, Star, Phone } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, Area, AreaChart } from 'recharts';
+import { RotateCcw, TrendingUp, Users, Star, Phone, Award, Target, Activity, BarChart3 } from 'lucide-react';
 import { useData } from '@/contexts/DataContext';
 import { CustomerData } from '@/types';
 
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1', '#d084d0', '#ffb347'];
+const COLORS = ['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#84CC16'];
 
 const Dashboard: React.FC = () => {
   const { processedData, setCurrentStep } = useData();
@@ -60,15 +59,44 @@ const Dashboard: React.FC = () => {
     return filtered;
   }, [processedData, selectedRegion, selectedZone, selectedUnit]);
 
-  // Calculate service type statistics
+  // Calculate service type statistics with better formatting
   const serviceTypeStats = useMemo(() => {
     const stats = [
-      { name: 'ฝากถอนเงินฝาก/สลากออมสิน', value: filteredData.reduce((sum, d) => sum + (d.ประเภท1 || 0), 0), color: COLORS[0] },
-      { name: 'ชำระสินเชื่อ/ชำระค่าสินค้าและบริการ', value: filteredData.reduce((sum, d) => sum + (d.ประเภท2 || 0), 0), color: COLORS[1] },
-      { name: 'สมัครใช้บริการ เงินฝาก/สินเชื่อ/MyMo/บัตร/อื่น ๆ', value: filteredData.reduce((sum, d) => sum + (d.ประเภท3 || 0), 0), color: COLORS[2] },
-      { name: 'สอบถาม/ขอคำปรึกษา', value: filteredData.reduce((sum, d) => sum + (d.ประเภท4 || 0), 0), color: COLORS[3] }
+      { 
+        name: 'ฝากถอนเงินฝาก/สลากออมสิน', 
+        shortName: 'ฝากถอน',
+        value: filteredData.reduce((sum, d) => sum + (d.ประเภท1 || 0), 0), 
+        color: COLORS[0],
+        percentage: 0
+      },
+      { 
+        name: 'ชำระสินเชื่อ/ชำระค่าสินค้าและบริการ', 
+        shortName: 'ชำระสินเชื่อ',
+        value: filteredData.reduce((sum, d) => sum + (d.ประเภท2 || 0), 0), 
+        color: COLORS[1],
+        percentage: 0
+      },
+      { 
+        name: 'สมัครใช้บริการ เงินฝาก/สินเชื่อ/MyMo/บัตร/อื่น ๆ', 
+        shortName: 'สมัครบริการ',
+        value: filteredData.reduce((sum, d) => sum + (d.ประเภท3 || 0), 0), 
+        color: COLORS[2],
+        percentage: 0
+      },
+      { 
+        name: 'สอบถาม/ขอคำปรึกษา', 
+        shortName: 'คำปรึกษา',
+        value: filteredData.reduce((sum, d) => sum + (d.ประเภท4 || 0), 0), 
+        color: COLORS[3],
+        percentage: 0
+      }
     ];
-    return stats.filter(s => s.value > 0);
+    
+    const total = stats.reduce((sum, s) => sum + s.value, 0);
+    return stats.map(stat => ({
+      ...stat,
+      percentage: total > 0 ? Math.round((stat.value / total) * 100) : 0
+    })).filter(s => s.value > 0);
   }, [filteredData]);
 
   // Calculate satisfaction scores
@@ -127,42 +155,45 @@ const Dashboard: React.FC = () => {
   }, [filteredData]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Dashboard วิเคราะห์ความพึงพอใจลูกค้า
+        {/* Header with enhanced styling */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 animate-fade-in">
+          <div className="mb-4 lg:mb-0">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent mb-3">
+              Dashboard วิเคราะห์ความพึงพอใจ
             </h1>
-            <p className="text-xl text-gray-600">
-              ธนาคารออมสิน - วิเคราะห์ข้อมูลการให้บริการและความพึงพอใจ
+            <p className="text-lg sm:text-xl text-gray-600 font-medium">
+              ธนาคารออมสิน - ระบบวิเคราะห์ข้อมูลการให้บริการ
             </p>
           </div>
           <Button
             variant="outline"
             onClick={() => setCurrentStep('upload')}
-            className="flex items-center gap-2"
+            className="group flex items-center gap-2 bg-white/80 backdrop-blur-sm border-2 border-purple-200 hover:border-purple-400 hover:bg-purple-50 transition-all duration-300 shadow-lg hover:shadow-xl px-6 py-3"
           >
-            <RotateCcw className="h-4 w-4" />
+            <RotateCcw className="h-5 w-5 group-hover:rotate-180 transition-transform duration-500" />
             อัปโหลดข้อมูลใหม่
           </Button>
         </div>
 
-        {/* Filters */}
-        <Card className="mb-8 shadow-lg">
-          <CardHeader>
-            <CardTitle>ตัวกรองข้อมูล</CardTitle>
+        {/* Enhanced Filters */}
+        <Card className="mb-8 shadow-xl bg-white/70 backdrop-blur-sm border-0 animate-scale-in">
+          <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Target className="h-6 w-6" />
+              ตัวกรองข้อมูล
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">ภาค</label>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">ภาค</label>
                 <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white border-2 border-gray-200 hover:border-purple-400 transition-colors duration-200">
                     <SelectValue placeholder="เลือกภาค" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-purple-200">
                     <SelectItem value="all">ทุกภาค</SelectItem>
                     {regions.map(region => (
                       <SelectItem key={region} value={region}>{region}</SelectItem>
@@ -171,13 +202,13 @@ const Dashboard: React.FC = () => {
                 </Select>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium mb-2">เขต</label>
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">เขต</label>
                 <Select value={selectedZone} onValueChange={setSelectedZone}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white border-2 border-gray-200 hover:border-purple-400 transition-colors duration-200">
                     <SelectValue placeholder="เลือกเขต" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-purple-200">
                     <SelectItem value="all">ทุกเขต</SelectItem>
                     {zones.map(zone => (
                       <SelectItem key={zone} value={zone}>{zone}</SelectItem>
@@ -186,13 +217,13 @@ const Dashboard: React.FC = () => {
                 </Select>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium mb-2">หน่วยให้บริการ</label>
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-gray-700">หน่วยให้บริการ</label>
                 <Select value={selectedUnit} onValueChange={setSelectedUnit}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white border-2 border-gray-200 hover:border-purple-400 transition-colors duration-200">
                     <SelectValue placeholder="เลือกหน่วยให้บริการ" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-purple-200">
                     <SelectItem value="all">ทุกหน่วย</SelectItem>
                     {units.map(unit => (
                       <SelectItem key={unit} value={unit}>{unit}</SelectItem>
@@ -202,7 +233,11 @@ const Dashboard: React.FC = () => {
               </div>
               
               <div className="flex items-end">
-                <Button onClick={resetFilters} variant="outline" className="w-full">
+                <Button 
+                  onClick={resetFilters} 
+                  variant="outline" 
+                  className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white border-0 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
                   ล้างตัวกรอง
                 </Button>
               </div>
@@ -210,107 +245,140 @@ const Dashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Users className="h-12 w-12 text-blue-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold text-gray-900">{filteredData.length}</p>
-                  <p className="text-gray-600">รายการบริการ</p>
+        {/* Enhanced Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="group relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 animate-slide-in-right">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-transparent"></div>
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-3xl font-bold">{filteredData.length.toLocaleString()}</p>
+                  <p className="text-blue-100 font-medium">รายการบริการ</p>
                 </div>
+                <Users className="h-12 w-12 text-blue-200 group-hover:scale-110 transition-transform duration-300" />
               </div>
             </CardContent>
           </Card>
           
-          <Card className="shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Star className="h-12 w-12 text-yellow-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold text-gray-900">{overallSatisfaction}</p>
-                  <p className="text-gray-600">คะแนนเฉลี่ย</p>
+          <Card className="group relative overflow-hidden bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 animate-slide-in-right" style={{animationDelay: '0.1s'}}>
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-400/20 to-transparent"></div>
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-3xl font-bold">{overallSatisfaction}</p>
+                  <p className="text-amber-100 font-medium">คะแนนเฉลี่ย</p>
                 </div>
+                <Star className="h-12 w-12 text-amber-200 group-hover:scale-110 transition-transform duration-300" />
               </div>
             </CardContent>
           </Card>
           
-          <Card className="shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <TrendingUp className="h-12 w-12 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold text-gray-900">{serviceTypeStats.reduce((sum, s) => sum + s.value, 0)}</p>
-                  <p className="text-gray-600">การใช้บริการรวม</p>
+          <Card className="group relative overflow-hidden bg-gradient-to-br from-emerald-500 to-green-500 text-white shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 animate-slide-in-right" style={{animationDelay: '0.2s'}}>
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-transparent"></div>
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-3xl font-bold">{serviceTypeStats.reduce((sum, s) => sum + s.value, 0).toLocaleString()}</p>
+                  <p className="text-emerald-100 font-medium">การใช้บริการรวม</p>
                 </div>
+                <TrendingUp className="h-12 w-12 text-emerald-200 group-hover:scale-110 transition-transform duration-300" />
               </div>
             </CardContent>
           </Card>
           
-          <Card className="shadow-lg">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <Phone className="h-12 w-12 text-purple-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold text-gray-900">{callbackRequests.length}</p>
-                  <p className="text-gray-600">ขอติดต่อกลับ</p>
+          <Card className="group relative overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 animate-slide-in-right" style={{animationDelay: '0.3s'}}>
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-transparent"></div>
+            <CardContent className="p-6 relative">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-3xl font-bold">{callbackRequests.length.toLocaleString()}</p>
+                  <p className="text-purple-100 font-medium">ขอติดต่อกลับ</p>
                 </div>
+                <Phone className="h-12 w-12 text-purple-200 group-hover:scale-110 transition-transform duration-300" />
               </div>
             </CardContent>
           </Card>
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">ภาพรวม</TabsTrigger>
-            <TabsTrigger value="satisfaction">ความพึงพอใจ</TabsTrigger>
-            <TabsTrigger value="regional">เปรียบเทียบภาค</TabsTrigger>
-            <TabsTrigger value="feedback">ความคิดเห็น</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-sm shadow-lg border-2 border-purple-100">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300">ภาพรวม</TabsTrigger>
+            <TabsTrigger value="satisfaction" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300">ความพึงพอใจ</TabsTrigger>
+            <TabsTrigger value="regional" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300">เปรียบเทียบภาค</TabsTrigger>
+            <TabsTrigger value="feedback" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white transition-all duration-300">ความคิดเห็น</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle>การใช้บริการแต่ละประเภท</CardTitle>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              {/* Enhanced Service Type Chart - Horizontal Bar Chart instead of Pie */}
+              <Card className="shadow-2xl bg-white/80 backdrop-blur-sm border-0 animate-fade-in">
+                <CardHeader className="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <BarChart3 className="h-6 w-6" />
+                    การใช้บริการแต่ละประเภท
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={serviceTypeStats}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, value }) => `${value}`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {serviceTypeStats.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
+                <CardContent className="p-6">
+                  <div className="space-y-6">
+                    {serviceTypeStats.map((stat, index) => (
+                      <div key={index} className="group">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-semibold text-gray-700 text-sm">{stat.shortName}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-lg" style={{color: stat.color}}>
+                              {stat.value.toLocaleString()}
+                            </span>
+                            <Badge variant="outline" className="text-xs">
+                              {stat.percentage}%
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all duration-1000 ease-out group-hover:shadow-lg"
+                            style={{
+                              width: `${stat.percentage}%`,
+                              backgroundColor: stat.color,
+                              animationDelay: `${index * 200}ms`
+                            }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">{stat.name}</p>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
 
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle>คะแนนความพึงพอใจรายด้าน</CardTitle>
+              {/* Enhanced Satisfaction Chart */}
+              <Card className="shadow-2xl bg-white/80 backdrop-blur-sm border-0 animate-fade-in">
+                <CardHeader className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <Award className="h-6 w-6" />
+                    คะแนนความพึงพอใจรายด้าน
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={satisfactionStats}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                      <YAxis domain={[0, 5]} />
-                      <Tooltip />
-                      <Bar dataKey="score" fill="#8884d8" />
+                <CardContent className="p-6">
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart data={satisfactionStats} layout="horizontal" margin={{ top: 20, right: 30, left: 120, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
+                      <XAxis type="number" domain={[0, 5]} stroke="#6b7280" />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} stroke="#6b7280" />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                          border: 'none', 
+                          borderRadius: '12px',
+                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                        }} 
+                      />
+                      <Bar dataKey="score" fill="url(#satisfactionGradient)" radius={[0, 8, 8, 0]} />
+                      <defs>
+                        <linearGradient id="satisfactionGradient" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#10b981" />
+                          <stop offset="100%" stopColor="#06b6d4" />
+                        </linearGradient>
+                      </defs>
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -319,23 +387,31 @@ const Dashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="satisfaction" className="space-y-6">
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle>รายละเอียดคะแนนความพึงพอใจ</CardTitle>
+            <Card className="shadow-2xl bg-white/80 backdrop-blur-sm border-0 animate-fade-in">
+              <CardHeader className="bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <Activity className="h-6 w-6" />
+                  รายละเอียดคะแนนความพึงพอใจ
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {satisfactionStats.map((stat, index) => (
-                    <div key={index} className="p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-purple-50">
-                      <h4 className="font-medium text-gray-800 mb-2">{stat.name}</h4>
-                      <div className="flex items-center">
-                        <span className="text-2xl font-bold text-blue-600">{stat.score}</span>
-                        <span className="text-gray-500 ml-1">/5</span>
+                    <div key={index} className="group p-6 border-2 border-gray-100 rounded-xl bg-gradient-to-br from-white to-purple-50 hover:border-purple-300 hover:shadow-xl transition-all duration-500 transform hover:scale-105 animate-slide-in-right" style={{animationDelay: `${index * 100}ms`}}>
+                      <h4 className="font-bold text-gray-800 mb-3 text-sm leading-tight">{stat.name}</h4>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                          {stat.score}
+                        </span>
+                        <span className="text-gray-500 text-lg font-medium">/5</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                         <div 
-                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${(stat.score / 5) * 100}%` }}
+                          className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all duration-1000 ease-out group-hover:shadow-lg"
+                          style={{ 
+                            width: `${(stat.score / 5) * 100}%`,
+                            animationDelay: `${index * 200}ms`
+                          }}
                         ></div>
                       </div>
                     </div>
@@ -346,47 +422,77 @@ const Dashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="regional" className="space-y-6">
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle>เปรียบเทียบผลการให้บริการแต่ละภาค</CardTitle>
+            {/* ... keep existing code (regional comparison content) */}
+            <Card className="shadow-2xl bg-white/80 backdrop-blur-sm border-0 animate-fade-in">
+              <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-t-lg">
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <TrendingUp className="h-6 w-6" />
+                  เปรียบเทียบผลการให้บริการแต่ละภาค
+                </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <ResponsiveContainer width="100%" height={400}>
                   <BarChart data={regionalComparison}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis yAxisId="left" orientation="left" />
-                    <YAxis yAxisId="right" orientation="right" />
-                    <Tooltip />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
+                    <XAxis dataKey="name" stroke="#6b7280" />
+                    <YAxis yAxisId="left" orientation="left" stroke="#6b7280" />
+                    <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                        border: 'none', 
+                        borderRadius: '12px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                      }} 
+                    />
                     <Legend />
-                    <Bar yAxisId="left" dataKey="satisfaction" fill="#8884d8" name="คะแนนเฉลี่ย" />
-                    <Bar yAxisId="right" dataKey="totalService" fill="#82ca9d" name="การใช้บริการรวม" />
+                    <Bar yAxisId="left" dataKey="satisfaction" fill="url(#satisfactionRegionGradient)" name="คะแนนเฉลี่ย" radius={[4, 4, 0, 0]} />
+                    <Bar yAxisId="right" dataKey="totalService" fill="url(#serviceRegionGradient)" name="การใช้บริการรวม" radius={[4, 4, 0, 0]} />
+                    <defs>
+                      <linearGradient id="satisfactionRegionGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#8b5cf6" />
+                        <stop offset="100%" stopColor="#a855f7" />
+                      </linearGradient>
+                      <linearGradient id="serviceRegionGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#06b6d4" />
+                        <stop offset="100%" stopColor="#0891b2" />
+                      </linearGradient>
+                    </defs>
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg">
-              <CardHeader>
+            <Card className="shadow-2xl bg-white/80 backdrop-blur-sm border-0 animate-fade-in">
+              <CardHeader className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-t-lg">
                 <CardTitle>สรุปข้อมูลแต่ละภาค</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {regionalComparison.map((region, index) => (
-                    <div key={index} className="p-4 border rounded-lg bg-white shadow-sm">
-                      <h4 className="font-semibold text-lg text-gray-800 mb-3">{region.name}</h4>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">คะแนนเฉลี่ย:</span>
-                          <Badge variant="outline">{region.satisfaction}</Badge>
+                    <div key={index} className="group p-6 border-2 border-gray-100 rounded-xl bg-gradient-to-br from-white to-blue-50 hover:border-blue-300 hover:shadow-xl transition-all duration-500 transform hover:scale-105 animate-slide-in-right" style={{animationDelay: `${index * 100}ms`}}>
+                      <h4 className="font-bold text-xl text-gray-800 mb-4 flex items-center gap-2">
+                        <Award className="h-5 w-5 text-blue-500" />
+                        {region.name}
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600 font-medium">คะแนนเฉลี่ย:</span>
+                          <Badge variant="outline" className="bg-gradient-to-r from-purple-500 to-blue-500 text-white border-0">
+                            {region.satisfaction}
+                          </Badge>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">การใช้บริการ:</span>
-                          <Badge variant="outline">{region.totalService}</Badge>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600 font-medium">การใช้บริการ:</span>
+                          <Badge variant="outline" className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0">
+                            {region.totalService.toLocaleString()}
+                          </Badge>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">หน่วยให้บริการ:</span>
-                          <Badge variant="outline">{region.units}</Badge>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600 font-medium">หน่วยให้บริการ:</span>
+                          <Badge variant="outline" className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0">
+                            {region.units}
+                          </Badge>
                         </div>
                       </div>
                     </div>
@@ -397,63 +503,75 @@ const Dashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="feedback" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle>ความคิดเห็นจากลูกค้า</CardTitle>
-                  <Badge variant="outline">{customerFeedback.length} รายการ</Badge>
+            {/* ... keep existing code (feedback content) */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              <Card className="shadow-2xl bg-white/80 backdrop-blur-sm border-0 animate-fade-in">
+                <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    ความคิดเห็นจากลูกค้า
+                    <Badge variant="outline" className="bg-white/20 text-white border-white/30">
+                      {customerFeedback.length} รายการ
+                    </Badge>
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <div className="space-y-4 max-h-96 overflow-y-auto">
                     {customerFeedback.map((item, index) => (
-                      <div key={index} className="p-3 bg-gray-50 rounded-lg border">
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge variant="outline" className="text-xs">
+                      <div key={index} className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border-l-4 border-green-400 hover:shadow-lg transition-all duration-300 animate-slide-in-right" style={{animationDelay: `${index * 50}ms`}}>
+                        <div className="flex justify-between items-start mb-3">
+                          <Badge variant="outline" className="text-xs bg-white border-green-300">
                             {item.หน่วยให้บริการ} - {item.เขต}
                           </Badge>
-                          <span className="text-xs text-gray-500">{item.วันที่}</span>
+                          <span className="text-xs text-gray-500 font-medium">{item.วันที่}</span>
                         </div>
-                        <p className="text-sm text-gray-700">{item.หมายเหตุ}</p>
+                        <p className="text-sm text-gray-700 leading-relaxed">{item.หมายเหตุ}</p>
                       </div>
                     ))}
                     {customerFeedback.length === 0 && (
-                      <div className="text-center text-gray-500 py-8">
-                        ไม่มีความคิดเห็นจากลูกค้า
+                      <div className="text-center text-gray-500 py-12">
+                        <Award className="mx-auto h-12 w-12 text-gray-300 mb-4" />
+                        <p className="text-lg">ไม่มีความคิดเห็นจากลูกค้า</p>
                       </div>
                     )}
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle>รายการขอติดต่อกลับ</CardTitle>
-                  <Badge variant="destructive">{callbackRequests.length} รายการ</Badge>
+              <Card className="shadow-2xl bg-white/80 backdrop-blur-sm border-0 animate-fade-in">
+                <CardHeader className="bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-t-lg">
+                  <CardTitle className="flex items-center gap-2">
+                    <Phone className="h-5 w-5" />
+                    รายการขอติดต่อกลับ
+                    <Badge variant="outline" className="bg-white/20 text-white border-white/30">
+                      {callbackRequests.length} รายการ
+                    </Badge>
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <div className="space-y-4 max-h-96 overflow-y-auto">
                     {callbackRequests.map((item, index) => (
-                      <div key={index} className="p-3 bg-red-50 rounded-lg border border-red-200">
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge variant="outline" className="text-xs">
+                      <div key={index} className="p-4 bg-gradient-to-r from-red-50 to-pink-50 rounded-xl border-l-4 border-red-400 hover:shadow-lg transition-all duration-300 animate-slide-in-right" style={{animationDelay: `${index * 50}ms`}}>
+                        <div className="flex justify-between items-start mb-3">
+                          <Badge variant="outline" className="text-xs bg-white border-red-300">
                             {item.หน่วยให้บริการ} - {item.เขต}
                           </Badge>
-                          <span className="text-xs text-gray-500">{item.วันที่}</span>
+                          <span className="text-xs text-gray-500 font-medium">{item.วันที่}</span>
                         </div>
-                        <p className="text-sm text-gray-700 font-medium">
-                          <Phone className="inline h-4 w-4 mr-1" />
+                        <p className="text-sm text-gray-700 font-semibold flex items-center gap-2 mb-2">
+                          <Phone className="inline h-4 w-4 text-red-500" />
                           {item.ลูกค้าต้องการให้ติดต่อกลับ}
                         </p>
                         {item.หมายเหตุ && (
-                          <p className="text-sm text-gray-600 mt-2">
+                          <p className="text-sm text-gray-600 leading-relaxed">
                             หมายเหตุ: {item.หมายเหตุ}
                           </p>
                         )}
                       </div>
                     ))}
                     {callbackRequests.length === 0 && (
-                      <div className="text-center text-gray-500 py-8">
-                        ไม่มีรายการขอติดต่อกลับ
+                      <div className="text-center text-gray-500 py-12">
+                        <Phone className="mx-auto h-12 w-12 text-gray-300 mb-4" />
+                        <p className="text-lg">ไม่มีรายการขอติดต่อกลับ</p>
                       </div>
                     )}
                   </div>
