@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -62,27 +61,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				},
-				success: {
-					DEFAULT: 'hsl(var(--success))',
-					foreground: 'hsl(var(--success-foreground))'
-				},
-				warning: {
-					DEFAULT: 'hsl(var(--warning))',
-					foreground: 'hsl(var(--warning-foreground))'
-				},
-				info: {
-					DEFAULT: 'hsl(var(--info))',
-					foreground: 'hsl(var(--info-foreground))'
 				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
-			},
-			fontFamily: {
-				sans: ['Inter', 'system-ui', 'sans-serif'],
 			},
 			keyframes: {
 				'accordion-down': {
@@ -100,24 +84,11 @@ export default {
 					to: {
 						height: '0'
 					}
-				},
-				'luxury-pulse': {
-					'0%, 100%': {
-						boxShadow: '0 0 0 0 rgba(231, 183, 56, 0.4)'
-					},
-					'50%': {
-						boxShadow: '0 0 0 10px rgba(231, 183, 56, 0)'
-					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out',
-				'luxury-pulse': 'luxury-pulse 2s infinite'
-			},
-			spacing: {
-				'18': '4.5rem',
-				'88': '22rem',
+				'accordion-up': 'accordion-up 0.2s ease-out'
 			}
 		}
 	},
