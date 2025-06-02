@@ -1,13 +1,30 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
-const Index = () => {
+import React from 'react';
+import { DataProvider, useData } from '@/contexts/DataContext';
+import FileUpload from '@/components/FileUpload';
+import DataValidation from '@/components/DataValidation';
+import Dashboard from '@/components/Dashboard';
+
+const MainContent: React.FC = () => {
+  const { currentStep } = useData();
+
+  switch (currentStep) {
+    case 'upload':
+      return <FileUpload />;
+    case 'validate':
+      return <DataValidation />;
+    case 'dashboard':
+      return <Dashboard />;
+    default:
+      return <FileUpload />;
+  }
+};
+
+const Index: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <DataProvider>
+      <MainContent />
+    </DataProvider>
   );
 };
 
