@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 248 246 240; /* luxury cream */
+    --background: 248 246 240; /* luxury cream - 60% base */
     --foreground: 26 35 50; /* luxury navy */
 
     --card: 255 255 255;
@@ -15,7 +15,7 @@
     --popover: 255 255 255;
     --popover-foreground: 26 35 50;
 
-    --primary: 212 175 55; /* luxury gold */
+    --primary: 212 175 55; /* luxury gold - 30% accent */
     --primary-foreground: 255 255 255;
 
     --secondary: 42 45 58; /* luxury charcoal */
@@ -24,7 +24,7 @@
     --muted: 245 242 236;
     --muted-foreground: 63 66 79;
 
-    --accent: 245 200 66; /* luxury amber */
+    --accent: 245 200 66; /* luxury amber - 10% highlight */
     --accent-foreground: 26 35 50;
 
     --destructive: 220 38 38;
@@ -35,15 +35,6 @@
     --ring: 212 175 55;
 
     --radius: 0.75rem;
-
-    --sidebar-background: 26 35 50; /* luxury navy */
-    --sidebar-foreground: 248 246 240;
-    --sidebar-primary: 212 175 55;
-    --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 42 45 58;
-    --sidebar-accent-foreground: 248 246 240;
-    --sidebar-border: 42 45 58;
-    --sidebar-ring: 212 175 55;
   }
 
   .dark {
@@ -74,15 +65,6 @@
     --border: 63 66 79;
     --input: 63 66 79;
     --ring: 212 175 55;
-
-    --sidebar-background: 26 35 50;
-    --sidebar-foreground: 248 246 240;
-    --sidebar-primary: 212 175 55;
-    --sidebar-primary-foreground: 26 35 50;
-    --sidebar-accent: 42 45 58;
-    --sidebar-accent-foreground: 248 246 240;
-    --sidebar-border: 42 45 58;
-    --sidebar-ring: 212 175 55;
   }
 }
 
@@ -92,16 +74,17 @@
   }
 
   body {
-    @apply bg-background text-foreground font-luxury;
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
   }
 }
 
 @layer components {
-  .glass-effect {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
-  }
-  
   .luxury-gradient {
     background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(245, 200, 66, 0.05) 100%);
   }
@@ -111,10 +94,5 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-  }
-  
-  .shimmer-bg {
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    background-size: 200% 100%;
   }
 }

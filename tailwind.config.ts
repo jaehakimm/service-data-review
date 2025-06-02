@@ -53,25 +53,15 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
-				},
-				// Luxury Banking Color Scheme
+				// Luxury Banking Colors
 				luxury: {
-					navy: '#1a2332',
-					charcoal: '#2a2d3a',
+					navy: '#1a2332',     // 60% base
+					charcoal: '#2a2d3a', 
 					slate: '#3f424f',
-					gold: '#d4af37',
+					gold: '#d4af37',     // 30% accent
 					'gold-light': '#e6c866',
 					'gold-dark': '#b8941f',
-					amber: '#f5c842',
+					amber: '#f5c842',    // 10% highlight
 					platinum: '#e5e4e2',
 					cream: '#f8f6f0',
 					pearl: '#faf9f7',
@@ -89,10 +79,6 @@ export default {
 			boxShadow: {
 				'luxury': '0 10px 40px rgba(0, 0, 0, 0.1)',
 				'luxury-soft': '0 4px 20px rgba(0, 0, 0, 0.08)',
-				'luxury-inset': 'inset 0 1px 3px rgba(0, 0, 0, 0.1)',
-			},
-			backdropBlur: {
-				'xs': '2px',
 			},
 			keyframes: {
 				'accordion-down': {
@@ -120,43 +106,12 @@ export default {
 						opacity: '1',
 						transform: 'translateY(0)'
 					}
-				},
-				'slide-in': {
-					'0%': {
-						opacity: '0',
-						transform: 'translateX(-20px)'
-					},
-					'100%': {
-						opacity: '1',
-						transform: 'translateX(0)'
-					}
-				},
-				'scale-in': {
-					'0%': {
-						opacity: '0',
-						transform: 'scale(0.95)'
-					},
-					'100%': {
-						opacity: '1',
-						transform: 'scale(1)'
-					}
-				},
-				'shimmer': {
-					'0%': {
-						backgroundPosition: '-200% 0'
-					},
-					'100%': {
-						backgroundPosition: '200% 0'
-					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.6s ease-out',
-				'slide-in': 'slide-in 0.5s ease-out',
-				'scale-in': 'scale-in 0.4s ease-out',
-				'shimmer': 'shimmer 2s linear infinite',
 			}
 		}
 	},
