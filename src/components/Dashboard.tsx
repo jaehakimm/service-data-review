@@ -1,14 +1,17 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { RotateCcw, TrendingUp, Users, Star, Phone } from 'lucide-react';
+import { RotateCcw, TrendingUp, Users, Star, Phone, Calendar as CalendarIcon } from 'lucide-react';
 import { useData } from '@/contexts/DataContext';
 import { CustomerData } from '@/types';
+import { format, parseISO, isAfter, isBefore, isEqual } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1', '#d084d0', '#ffb347'];
 
@@ -17,6 +20,8 @@ const Dashboard: React.FC = () => {
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
   const [selectedZone, setSelectedZone] = useState<string>('all');
   const [selectedUnit, setSelectedUnit] = useState<string>('all');
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
   // Get unique values for filters
   const regions = useMemo(() => {
@@ -45,9 +50,27 @@ const Dashboard: React.FC = () => {
     return unique.sort();
   }, [processedData, selectedRegion, selectedZone]);
 
-  // Filtered data based on selections
+  // Helper function to parse date strings
+  const parseDate = (dateString: string): Date | null => {
+    if (!dateString) return null;
+    try {
+      // Try different date formats
+      if (dateString.includes('/')) {
+        const [day, month, year] = dateString.split('/');
+        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      } else if (dateString.includes('-')) {
+        return parseISO(dateString);
+      }
+      return new Date(dateString);
+    } catch {
+      return null;
+    }
+  };
+
+  // Filtered data based on selections including date filter
   const filteredData = useMemo(() => {
     let filtered = processedData;
+    
     if (selectedRegion !== 'all') {
       filtered = filtered.filter(d => d.ภาค === selectedRegion);
     }
@@ -57,8 +80,29 @@ const Dashboard: React.FC = () => {
     if (selectedUnit !== 'all') {
       filtered = filtered.filter(d => d.หน่วยให้บริการ === selectedUnit);
     }
+    
+    // Date filtering
+    if (startDate || endDate) {
+      filtered = filtered.filter(d => {
+        const recordDate = parseDate(d.วันที่);
+        if (!recordDate) return false;
+        
+        let isInRange = true;
+        
+        if (startDate) {
+          isInRange = isInRange && (isAfter(recordDate, startDate) || isEqual(recordDate, startDate));
+        }
+        
+        if (endDate) {
+          isInRange = isInRange && (isBefore(recordDate, endDate) || isEqual(recordDate, endDate));
+        }
+        
+        return isInRange;
+      });
+    }
+    
     return filtered;
-  }, [processedData, selectedRegion, selectedZone, selectedUnit]);
+  }, [processedData, selectedRegion, selectedZone, selectedUnit, startDate, endDate]);
 
   // Calculate service type statistics
   const serviceTypeStats = useMemo(() => {
@@ -116,6 +160,8 @@ const Dashboard: React.FC = () => {
     setSelectedRegion('all');
     setSelectedZone('all');
     setSelectedUnit('all');
+    setStartDate(undefined);
+    setEndDate(undefined);
   };
 
   const overallSatisfaction = useMemo(() => {
@@ -155,7 +201,7 @@ const Dashboard: React.FC = () => {
             <CardTitle>ตัวกรองข้อมูล</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">ภาค</label>
                 <Select value={selectedRegion} onValueChange={setSelectedRegion}>
@@ -199,6 +245,60 @@ const Dashboard: React.FC = () => {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">วันที่เริ่มต้น</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "dd/MM/yyyy") : "เลือกวันที่"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={setStartDate}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">วันที่สิ้นสุด</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !endDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? format(endDate, "dd/MM/yyyy") : "เลือกวันที่"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={setEndDate}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
               
               <div className="flex items-end">
