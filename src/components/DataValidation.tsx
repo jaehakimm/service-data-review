@@ -1,10 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, XCircle, ArrowRight, RotateCcw, Building2, Database, TrendingUp } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowRight, RotateCcw } from 'lucide-react';
 import { useData } from '@/contexts/DataContext';
 import { COLUMN_DEFINITIONS, ColumnMapping, CustomerData } from '@/types';
 import { validateDataType, convertValue } from '@/utils/excelUtils';
@@ -36,12 +37,12 @@ const ExcelColumn: React.FC<ExcelColumnProps> = ({ column, index, sampleData }) 
   return (
     <div
       ref={drag}
-      className={`p-4 border border-navy-200 rounded-xl cursor-move transition-all duration-200 ${
-        isDragging ? 'opacity-50 scale-95' : 'hover:shadow-md hover:border-primary/50'
-      } bg-gradient-to-br from-navy-50 to-navy-100`}
+      className={`p-3 border rounded-lg cursor-move transition-all ${
+        isDragging ? 'opacity-50 scale-95' : 'hover:shadow-md'
+      } bg-blue-50 border-blue-200`}
     >
-      <div className="font-semibold text-navy-800">{column || `คอลัมน์ ${index + 1}`}</div>
-      <div className="text-xs text-navy-600 mt-2 truncate bg-white/50 rounded px-2 py-1">
+      <div className="font-medium text-blue-800">{column || `คอลัมน์ ${index + 1}`}</div>
+      <div className="text-xs text-blue-600 mt-1 truncate">
         ตัวอย่าง: {sampleData || 'ไม่มีข้อมูล'}
       </div>
     </div>
@@ -70,27 +71,27 @@ const SystemColumn: React.FC<SystemColumnProps> = ({ systemColumn, mappedColumn,
   return (
     <div
       ref={drop}
-      className={`p-4 border-2 border-dashed rounded-xl transition-all duration-300 min-h-[120px] ${
+      className={`p-4 border-2 border-dashed rounded-lg transition-all min-h-[100px] ${
         isOver
-          ? 'border-primary bg-primary/10 scale-105'
+          ? 'border-green-400 bg-green-50'
           : mappedColumn
-          ? 'border-primary/50 bg-gradient-to-br from-gold-50 to-gold-100'
+          ? 'border-green-300 bg-green-50'
           : isRequired
-          ? 'border-destructive/50 bg-destructive/5'
-          : 'border-border bg-muted/30'
+          ? 'border-red-300 bg-red-50'
+          : 'border-gray-300 bg-gray-50'
       }`}
     >
-      <div className="flex items-center justify-between mb-3">
-        <div className="font-semibold text-foreground">{systemColumn}</div>
+      <div className="flex items-center justify-between mb-2">
+        <div className="font-medium text-gray-800">{systemColumn}</div>
         {isRequired && (
-          <Badge variant="destructive" className="text-xs font-medium">จำเป็น</Badge>
+          <Badge variant="destructive" className="text-xs">จำเป็น</Badge>
         )}
       </div>
       
-      <div className="text-xs text-muted-foreground mb-3 bg-white/50 rounded p-2">{columnDef.description}</div>
+      <div className="text-xs text-gray-600 mb-2">{columnDef.description}</div>
       
-      <div className="flex items-center justify-between mb-3">
-        <Badge variant="outline" className="text-xs border-primary/20 text-primary">
+      <div className="flex items-center justify-between">
+        <Badge variant="outline" className="text-xs">
           {columnDef.type}
         </Badge>
         {mappedColumn && (
@@ -98,7 +99,7 @@ const SystemColumn: React.FC<SystemColumnProps> = ({ systemColumn, mappedColumn,
             variant="ghost"
             size="sm"
             onClick={() => onRemove(systemColumn)}
-            className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"
+            className="text-red-600 hover:text-red-800"
           >
             <XCircle className="h-4 w-4" />
           </Button>
@@ -106,16 +107,13 @@ const SystemColumn: React.FC<SystemColumnProps> = ({ systemColumn, mappedColumn,
       </div>
       
       {mappedColumn && (
-        <div className="mt-3 p-3 bg-white rounded-lg border border-primary/20 shadow-sm">
-          <div className="font-medium text-primary text-sm flex items-center gap-2">
-            <CheckCircle className="h-4 w-4" />
-            {mappedColumn}
-          </div>
+        <div className="mt-2 p-2 bg-white rounded border">
+          <div className="font-medium text-green-700">{mappedColumn}</div>
         </div>
       )}
       
       {!mappedColumn && (
-        <div className="mt-3 text-center text-muted-foreground text-sm border-2 border-dashed border-border rounded-lg py-4">
+        <div className="mt-2 text-center text-gray-500 text-sm">
           ลากคอลัมน์มาวางที่นี่
         </div>
       )}
@@ -243,38 +241,28 @@ const DataValidation: React.FC = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="min-h-screen bg-gradient-to-br from-navy-50 via-background to-accent p-6">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-6">
         <div className="max-w-7xl mx-auto">
-          {/* Premium Header */}
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-3 rounded-2xl bg-primary/10 border border-primary/20">
-                <Building2 className="h-8 w-8 text-primary" />
-              </div>
-              <div className="h-12 w-px bg-border"></div>
-              <div className="p-3 rounded-2xl bg-accent/50 border border-accent">
-                <Database className="h-8 w-8 text-accent-foreground" />
-              </div>
-            </div>
-            <h1 className="text-4xl font-bold text-foreground mb-4 tracking-tight">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
               ตรวจสอบและจับคู่คอลัมน์ข้อมูล
             </h1>
-            <p className="text-xl text-muted-foreground font-medium">
+            <p className="text-xl text-gray-600">
               ลากและวางคอลัมน์จากไฟล์ Excel ไปยังคอลัมน์ในระบบที่ต้องการ
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Excel Columns */}
-            <Card className="shadow-luxury border-border/50 backdrop-blur-sm bg-card/95">
-              <CardHeader className="border-b border-border/50">
-                <CardTitle className="flex items-center gap-3 text-foreground">
-                  <div className="w-4 h-4 bg-navy-500 rounded-full"></div>
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-blue-500 rounded"></div>
                   คอลัมน์จากไฟล์ Excel
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+              <CardContent>
+                <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto">
                   {availableColumns.map((column, index) => (
                     <ExcelColumn
                       key={index}
@@ -284,8 +272,7 @@ const DataValidation: React.FC = () => {
                     />
                   ))}
                   {availableColumns.length === 0 && (
-                    <div className="text-center text-muted-foreground py-12 bg-muted/30 rounded-xl border border-dashed border-border">
-                      <CheckCircle className="h-12 w-12 mx-auto mb-4 text-primary" />
+                    <div className="text-center text-gray-500 py-8">
                       คอลัมน์ทั้งหมดถูกจับคู่แล้ว
                     </div>
                   )}
@@ -294,15 +281,15 @@ const DataValidation: React.FC = () => {
             </Card>
 
             {/* System Columns */}
-            <Card className="shadow-luxury border-border/50 backdrop-blur-sm bg-card/95">
-              <CardHeader className="border-b border-border/50">
-                <CardTitle className="flex items-center gap-3 text-foreground">
-                  <div className="w-4 h-4 bg-primary rounded-full"></div>
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-green-500 rounded"></div>
                   คอลัมน์ในระบบ
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+              <CardContent>
+                <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto">
                   {columnMappings.map((mapping) => (
                     <SystemColumn
                       key={mapping.systemColumn}
@@ -318,32 +305,29 @@ const DataValidation: React.FC = () => {
           </div>
 
           {/* Validation Summary */}
-          <Card className="mt-8 shadow-luxury border-border/50 backdrop-blur-sm bg-card/95">
-            <CardHeader className="border-b border-border/50">
-              <CardTitle className="flex items-center gap-3 text-foreground">
-                <TrendingUp className="h-6 w-6 text-primary" />
-                สรุปการจับคู่คอลัมน์
-              </CardTitle>
+          <Card className="mt-8 shadow-lg">
+            <CardHeader>
+              <CardTitle>สรุปการจับคู่คอลัมน์</CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="text-center p-6 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl border border-primary/20">
-                  <div className="text-3xl font-bold text-primary mb-2">
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">
                     {columnMappings.filter(m => m.isValid).length}
                   </div>
-                  <div className="text-sm text-muted-foreground font-medium">คอลัมน์ที่จับคู่แล้ว</div>
+                  <div className="text-sm text-gray-600">คอลัมน์ที่จับคู่แล้ว</div>
                 </div>
-                <div className="text-center p-6 bg-gradient-to-br from-destructive/10 to-destructive/5 rounded-xl border border-destructive/20">
-                  <div className="text-3xl font-bold text-destructive mb-2">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-600">
                     {columnMappings.filter(m => !m.isValid).length}
                   </div>
-                  <div className="text-sm text-muted-foreground font-medium">คอลัมน์ที่ยังไม่จับคู่</div>
+                  <div className="text-sm text-gray-600">คอลัมน์ที่ยังไม่จับคู่</div>
                 </div>
-                <div className="text-center p-6 bg-gradient-to-br from-accent to-accent/80 rounded-xl border border-accent-foreground/20">
-                  <div className="text-3xl font-bold text-accent-foreground mb-2">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">
                     {rawData.length - 1}
                   </div>
-                  <div className="text-sm text-accent-foreground/80 font-medium">แถวข้อมูล</div>
+                  <div className="text-sm text-gray-600">แถวข้อมูล</div>
                 </div>
               </div>
 
@@ -351,14 +335,14 @@ const DataValidation: React.FC = () => {
                 <Button
                   variant="outline"
                   onClick={() => setCurrentStep('upload')}
-                  className="flex items-center gap-2 border-border hover:bg-muted/50"
+                  className="flex items-center gap-2"
                 >
                   <RotateCcw className="h-4 w-4" />
                   กลับไปอัปโหลดใหม่
                 </Button>
                 <Button
                   onClick={validateAndProcess}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-200"
+                  className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
                   disabled={columnMappings.filter(m => m.isValid).length === 0}
                 >
                   <ArrowRight className="h-4 w-4" />
