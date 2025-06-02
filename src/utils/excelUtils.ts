@@ -8,17 +8,52 @@ export const readExcelFile = async (file: File): Promise<any[][]> => {
     reader.onload = (e) => {
       try {
         const data = e.target?.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        let jsonData: any[][];
+        
+        if (file.name.toLowerCase().endsWith('.csv')) {
+          // Handle CSV files
+          const csvText = data as string;
+          const lines = csvText.split('\n');
+          jsonData = lines.map(line => {
+            // Simple CSV parsing - handles basic cases
+            const cells = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+              const char = line[i];
+              if (char === '"') {
+                inQuotes = !inQuotes;
+              } else if (char === ',' && !inQuotes) {
+                cells.push(current.trim());
+                current = '';
+              } else {
+                current += char;
+              }
+            }
+            cells.push(current.trim());
+            return cells;
+          }).filter(row => row.some(cell => cell !== ''));
+        } else {
+          // Handle Excel files
+          const workbook = XLSX.read(data, { type: 'binary' });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        }
+        
         resolve(jsonData as any[][]);
       } catch (error) {
         reject(error);
       }
     };
     reader.onerror = () => reject(new Error('Failed to read file'));
-    reader.readAsBinaryString(file);
+    
+    if (file.name.toLowerCase().endsWith('.csv')) {
+      reader.readAsText(file);
+    } else {
+      reader.readAsBinaryString(file);
+    }
   });
 };
 
