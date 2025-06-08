@@ -115,11 +115,11 @@ const Dashboard: React.FC = () => {
     return stats.filter(s => s.value > 0);
   }, [filteredData]);
 
-  // Calculate satisfaction scores
+  // Calculate satisfaction scores with better data validation
   const satisfactionStats = useMemo(() => {
     if (filteredData.length === 0) return [];
     
-    return [
+    const stats = [
       { name: 'การดูแล เอาใจใส่', score: filteredData.reduce((sum, d) => sum + (d.ข้อ1 || 0), 0) / filteredData.length },
       { name: 'การตอบคำถาม ให้คำแนะนำ', score: filteredData.reduce((sum, d) => sum + (d.ข้อ2 || 0), 0) / filteredData.length },
       { name: 'ความรวดเร็วในการให้บริการ', score: filteredData.reduce((sum, d) => sum + (d.ข้อ3 || 0), 0) / filteredData.length },
@@ -127,7 +127,13 @@ const Dashboard: React.FC = () => {
       { name: 'ความพร้อมของเครื่องมือ', score: filteredData.reduce((sum, d) => sum + (d.ข้อ5 || 0), 0) / filteredData.length },
       { name: 'ความประทับใจในการให้บริการ (1)', score: filteredData.reduce((sum, d) => sum + (d.ข้อ6 || 0), 0) / filteredData.length },
       { name: 'ความประทับใจในการให้บริการ (2)', score: filteredData.reduce((sum, d) => sum + (d.ข้อ7 || 0), 0) / filteredData.length }
-    ].map(item => ({ ...item, score: Math.round(item.score * 100) / 100 }));
+    ].map(item => ({ 
+      ...item, 
+      score: Math.round(item.score * 100) / 100 
+    }));
+    
+    // Filter out any invalid scores
+    return stats.filter(stat => stat.score > 0);
   }, [filteredData]);
 
   // Regional comparison
@@ -370,7 +376,7 @@ const Dashboard: React.FC = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Service Types Chart */}
               <Card className="shadow-lg">
                 <CardHeader>
@@ -406,27 +412,73 @@ const Dashboard: React.FC = () => {
                   <CardTitle>คะแนนความพึงพอใจรายด้าน</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  {satisfactionStats.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={400}>
+                      <BarChart 
+                        data={satisfactionStats} 
+                        layout="horizontal"
+                        margin={{ top: 20, right: 30, left: 200, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          type="number" 
+                          domain={[0, 5]} 
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis 
+                          type="category" 
+                          dataKey="name" 
+                          tick={{ fontSize: 10 }} 
+                          width={190}
+                        />
+                        <Tooltip 
+                          formatter={(value: any) => [`${value}/5`, 'คะแนน']}
+                          labelStyle={{ fontSize: '12px' }}
+                        />
+                        <Bar 
+                          dataKey="score" 
+                          fill="#8884d8" 
+                          radius={[0, 4, 4, 0]}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="flex items-center justify-center h-64 text-gray-500">
+                      ไม่มีข้อมูลความพึงพอใจที่จะแสดง
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Full width detailed satisfaction chart */}
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle>คะแนนความพึงพอใจรายด้าน (รายละเอียด)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {satisfactionStats.length > 0 ? (
                   <ResponsiveContainer width="100%" height={500}>
                     <BarChart 
                       data={satisfactionStats} 
                       layout="horizontal"
-                      margin={{ top: 20, right: 30, left: 250, bottom: 5 }}
+                      margin={{ top: 20, right: 30, left: 300, bottom: 5 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis 
                         type="number" 
                         domain={[0, 5]} 
-                        tick={{ fontSize: 12 }}
+                        tick={{ fontSize: 14 }}
                       />
                       <YAxis 
                         type="category" 
                         dataKey="name" 
-                        tick={{ fontSize: 11 }} 
-                        width={240}
+                        tick={{ fontSize: 12 }} 
+                        width={280}
                       />
                       <Tooltip 
                         formatter={(value: any) => [`${value}/5`, 'คะแนน']}
-                        labelStyle={{ fontSize: '12px' }}
+                        labelStyle={{ fontSize: '14px' }}
                       />
                       <Bar 
                         dataKey="score" 
@@ -435,9 +487,13 @@ const Dashboard: React.FC = () => {
                       />
                     </BarChart>
                   </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
+                ) : (
+                  <div className="flex items-center justify-center h-64 text-gray-500">
+                    ไม่มีข้อมูลความพึงพอใจที่จะแสดง
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="satisfaction" className="space-y-6">
