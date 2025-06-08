@@ -14,6 +14,16 @@ const SENTIMENT_COLORS = {
   Neutral: '#6b7280'
 };
 
+// สีสำหรับประเภทปัญหาต่างๆ
+const ISSUE_COLORS = [
+  '#ef4444', // แดง - บริการช้า
+  '#f97316', // ส้ม - ระบบช้า
+  '#8b5cf6', // ม่วง - Service Mind พนักงาน
+  '#3b82f6', // น้ำเงิน - แซงคิว
+  '#f59e0b', // เหลือง - ปรับปรุงสถานที่
+  '#6b7280'  // เทา - ไม่สามารถจัดหมวดหมู่ได้
+];
+
 const chartConfig = {
   Positive: {
     label: "Positive",
@@ -78,7 +88,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
     }).sort((a, b) => b.total - a.total);
   }, [data]);
 
-  // วิเคราะห์ประเภทปัญหาของ Negative sentiment
+  // วิเคราะห์ประเภทปัญหาของ Negative sentiment - แก้ไขให้มีสีที่แตกต่างกัน
   const negativeIssues = useMemo(() => {
     const negativeData = data.filter(item => item.sentiment === 'Negative');
     const issueTypes = [
@@ -89,7 +99,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
       { key: 'ปรับปรุงสถานที่', label: 'ปรับปรุงสถานที่', icon: '🏢' },
       { key: 'ไม่สามารถจัดหมวดหมู่ได้', label: 'ไม่สามารถจัดหมวดหมู่ได้', icon: '❓' }
     ];
-    return issueTypes.map(issue => {
+    return issueTypes.map((issue, index) => {
       const count = negativeData.reduce((sum, item) => {
         return sum + (item[issue.key as keyof CustomerData] as number || 0);
       }, 0);
@@ -98,7 +108,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
         value: count,
         percentage: negativeData.length > 0 ? Math.round((count / negativeData.length) * 100) : 0,
         icon: issue.icon,
-        fill: '#ef4444'
+        fill: ISSUE_COLORS[index] // กำหนดสีที่แตกต่างกันสำหรับแต่ละประเภท
       };
     }).filter(issue => issue.value > 0).sort((a, b) => b.value - a.value);
   }, [data]);
@@ -242,7 +252,6 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
 
       {/* Cards แยกออกมา: สรุปตัวเลขแต่ละภาค และ อันดับภาคด้วย Negative สูงสุด */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* สรุปตัวเลขแต่ละภาค */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">สรุปตัวเลขแต่ละภาค</CardTitle>
@@ -287,7 +296,6 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
           </CardContent>
         </Card>
 
-        {/* อันดับภาคด้วย Negative สูงสุด */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">อันดับภาคด้วย Negative สูงสุด</CardTitle>
@@ -323,7 +331,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
         </Card>
       </div>
 
-      {/* วิเคราะห์ประเภทปัญหา Negative - Polar Chart */}
+      {/* วิเคราะห์ประเภทปัญหา Negative - Pie Chart ที่มีสีแตกต่างกัน */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -349,7 +357,32 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
                   </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartTooltip 
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[150px]">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-lg">{data.icon}</span>
+                              <span className="font-medium text-gray-800">{data.name}</span>
+                            </div>
+                            <div className="text-sm space-y-1">
+                              <div className="flex justify-between">
+                                <span>จำนวน:</span>
+                                <span className="font-semibold">{data.value} ครั้ง</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>เปอร์เซ็นต์:</span>
+                                <span className="font-semibold">{data.percentage}%</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
                 </PieChart>
               </ChartContainer>
             </div>
@@ -361,14 +394,30 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
               {negativeIssues.map((issue, index) => (
                 <div 
                   key={index} 
-                  className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-lg shadow-sm"
+                  className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-lg shadow-sm"
+                  style={{ 
+                    borderLeftColor: issue.fill, 
+                    borderLeftWidth: '4px',
+                    background: `linear-gradient(to right, ${issue.fill}10, ${issue.fill}05)`
+                  }}
                 >
                   <div className="flex items-center gap-3">
+                    <div 
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: issue.fill }}
+                    ></div>
                     <span className="text-lg">{issue.icon}</span>
                     <span className="text-sm font-medium">{issue.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="destructive" className="animate-pulse">
+                    <Badge 
+                      style={{ 
+                        backgroundColor: issue.fill, 
+                        color: 'white',
+                        border: 'none'
+                      }}
+                      className="animate-pulse"
+                    >
                       {issue.value} ครั้ง
                     </Badge>
                     <span className="text-xs text-gray-600 font-semibold">
@@ -423,7 +472,6 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                     <p className="text-sm text-gray-700 leading-relaxed">{item.หมายเหตุ}</p>
                   </div>
                   
-                  {/* แสดงประเภทปัญหาในรูปแบบ chips */}
                   <div className="flex flex-wrap gap-1">
                     {item.บริการช้า === 1 && (
                       <Badge variant="destructive" className="text-xs">⏱️ บริการช้า</Badge>
