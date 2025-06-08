@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +14,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+
+// สีสำหรับ sentiment
+const SENTIMENT_COLORS = {
+  Positive: '#22c55e',
+  Negative: '#ef4444', 
+  Neutral: '#6b7280'
+};
 
 // สีสำหรับประเภทปัญหาต่างๆ
 const ISSUE_COLORS = [
