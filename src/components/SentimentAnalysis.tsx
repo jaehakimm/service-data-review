@@ -70,7 +70,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
     ภาค: 'all',
     วันที่From: undefined,
     วันที่To: undefined,
-    บริการช้า: null,
+    บริการช้า: null, // null = แสดงทั้งหมด (default)
     ระบบช้า: null,
     serviceMind: null,
     แซงคิว: null,
@@ -181,7 +181,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
       filtered = filtered.filter(item => item.วันที่ <= toDate);
     }
     
-    // Filter by ประเภทปัญหา
+    // Filter by ประเภทปัญหา - เปลี่ยนเป็น: null = แสดงทั้งหมด, true = มี, false = ไม่มี
     if (filters.บริการช้า !== null) {
       filtered = filtered.filter(item => filters.บริการช้า ? item.บริการช้า === 1 : item.บริการช้า !== 1);
     }
@@ -669,10 +669,10 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
               </div>
             </div>
 
-            {/* ประเภทปัญหา Filters */}
+            {/* ประเภทปัญหา Filters - เปลี่ยนเป็น Toggle Buttons */}
             <div className="mt-4">
-              <label className="text-sm font-medium mb-2 block">ประเภทปัญหา</label>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+              <label className="text-sm font-medium mb-3 block">ประเภทปัญหา (คลิก = มี, ไม่คลิก = ไม่มี, Default = มีทั้งหมด)</label>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 {[
                   { key: 'บริการช้า', label: 'บริการช้า', icon: '⏱️' },
                   { key: 'ระบบช้า', label: 'ระบบช้า', icon: '💻' },
@@ -680,27 +680,46 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                   { key: 'แซงคิว', label: 'แซงคิว', icon: '🚫' },
                   { key: 'ปรับปรุงสถานที่', label: 'ปรับปรุงสถานที่', icon: '🏢' },
                   { key: 'ไม่สามารถจัดหมวดหมู่ได้', label: 'อื่นๆ', icon: '❓' }
-                ].map((issue) => (
-                  <div key={issue.key} className="flex flex-col gap-1">
-                    <span className="text-xs text-gray-600">{issue.icon} {issue.label}</span>
-                    <Select
-                      value={filters[issue.key as keyof FilterState] === null ? "all" : filters[issue.key as keyof FilterState] ? "true" : "false"}
-                      onValueChange={(value) => {
-                        const boolValue = value === "all" ? null : value === "true";
-                        setFilters(prev => ({ ...prev, [issue.key]: boolValue }));
-                      }}
-                    >
-                      <SelectTrigger className="h-8">
-                        <SelectValue placeholder="ทั้งหมด" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">ทั้งหมด</SelectItem>
-                        <SelectItem value="true">มี</SelectItem>
-                        <SelectItem value="false">ไม่มี</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ))}
+                ].map((issue) => {
+                  const filterValue = filters[issue.key as keyof FilterState] as boolean | null;
+                  
+                  return (
+                    <div key={issue.key} className="flex flex-col gap-2">
+                      <span className="text-xs text-gray-600 text-center">{issue.icon}</span>
+                      <Button
+                        variant={filterValue === null ? "outline" : filterValue ? "default" : "secondary"}
+                        size="sm"
+                        onClick={() => {
+                          const currentValue = filters[issue.key as keyof FilterState] as boolean | null;
+                          let newValue: boolean | null;
+                          
+                          if (currentValue === null) {
+                            newValue = true; // จาก "มีทั้งหมด" ไป "มี"
+                          } else if (currentValue === true) {
+                            newValue = false; // จาก "มี" ไป "ไม่มี"
+                          } else {
+                            newValue = null; // จาก "ไม่มี" ไป "มีทั้งหมด"
+                          }
+                          
+                          setFilters(prev => ({ ...prev, [issue.key]: newValue }));
+                        }}
+                        className={cn(
+                          "h-12 text-xs font-medium transition-all duration-200 flex flex-col gap-1",
+                          filterValue === null && "border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100",
+                          filterValue === true && "bg-green-600 hover:bg-green-700 text-white border-green-600",
+                          filterValue === false && "bg-red-100 hover:bg-red-200 text-red-800 border-red-300"
+                        )}
+                      >
+                        <div className="text-center leading-tight">
+                          {issue.label}
+                        </div>
+                        <div className="text-xs opacity-80">
+                          {filterValue === null ? "ทั้งหมด" : filterValue ? "มี" : "ไม่มี"}
+                        </div>
+                      </Button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
