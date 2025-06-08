@@ -66,8 +66,8 @@ interface FilterState {
 
 const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
   const [filters, setFilters] = useState<FilterState>({
-    หน่วยให้บริการ: '',
-    ภาค: '',
+    หน่วยให้บริการ: 'all',
+    ภาค: 'all',
     วันที่From: undefined,
     วันที่To: undefined,
     บริการช้า: null,
@@ -161,12 +161,12 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
     let filtered = data.filter(item => item.sentiment === 'Negative' && item.หมายเหตุ && item.หมายเหตุ.trim() !== '');
     
     // Filter by หน่วยให้บริการ
-    if (filters.หน่วยให้บริการ) {
+    if (filters.หน่วยให้บริการ && filters.หน่วยให้บริการ !== 'all') {
       filtered = filtered.filter(item => item.หน่วยให้บริการ === filters.หน่วยให้บริการ);
     }
     
     // Filter by ภาค
-    if (filters.ภาค) {
+    if (filters.ภาค && filters.ภาค !== 'all') {
       filtered = filtered.filter(item => item.ภาค === filters.ภาค);
     }
     
@@ -211,8 +211,8 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
 
   const clearFilters = () => {
     setFilters({
-      หน่วยให้บริการ: '',
-      ภาค: '',
+      หน่วยให้บริการ: 'all',
+      ภาค: 'all',
       วันที่From: undefined,
       วันที่To: undefined,
       บริการช้า: null,
@@ -225,7 +225,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
   };
 
   const hasActiveFilters = Object.values(filters).some(value => 
-    (typeof value === 'string' && value !== '') || 
+    (typeof value === 'string' && value !== 'all') || 
     (typeof value === 'boolean') ||
     (value instanceof Date)
   );
@@ -585,7 +585,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                     <SelectValue placeholder="ทั้งหมด" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">ทั้งหมด</SelectItem>
+                    <SelectItem value="all">ทั้งหมด</SelectItem>
                     {uniqueUnits.map(unit => (
                       <SelectItem key={unit} value={unit}>{unit}</SelectItem>
                     ))}
@@ -604,7 +604,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                     <SelectValue placeholder="ทั้งหมด" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">ทั้งหมด</SelectItem>
+                    <SelectItem value="all">ทั้งหมด</SelectItem>
                     {uniqueRegions.map(region => (
                       <SelectItem key={region} value={region}>{region}</SelectItem>
                     ))}
@@ -684,9 +684,9 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                   <div key={issue.key} className="flex flex-col gap-1">
                     <span className="text-xs text-gray-600">{issue.icon} {issue.label}</span>
                     <Select
-                      value={filters[issue.key as keyof FilterState] === null ? "" : filters[issue.key as keyof FilterState] ? "true" : "false"}
+                      value={filters[issue.key as keyof FilterState] === null ? "all" : filters[issue.key as keyof FilterState] ? "true" : "false"}
                       onValueChange={(value) => {
-                        const boolValue = value === "" ? null : value === "true";
+                        const boolValue = value === "all" ? null : value === "true";
                         setFilters(prev => ({ ...prev, [issue.key]: boolValue }));
                       }}
                     >
@@ -694,7 +694,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                         <SelectValue placeholder="ทั้งหมด" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">ทั้งหมด</SelectItem>
+                        <SelectItem value="all">ทั้งหมด</SelectItem>
                         <SelectItem value="true">มี</SelectItem>
                         <SelectItem value="false">ไม่มี</SelectItem>
                       </SelectContent>
