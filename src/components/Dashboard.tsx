@@ -405,10 +405,10 @@ const Dashboard: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={satisfactionStats}>
+                    <BarChart data={satisfactionStats} layout="horizontal">
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                      <YAxis domain={[0, 5]} />
+                      <XAxis type="number" domain={[0, 5]} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={200} />
                       <Tooltip />
                       <Bar dataKey="score" fill="#8884d8" />
                     </BarChart>
