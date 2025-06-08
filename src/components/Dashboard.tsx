@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -404,11 +405,24 @@ const Dashboard: React.FC = () => {
                   <CardTitle>คะแนนความพึงพอใจรายด้าน</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={satisfactionStats}>
+                  <ResponsiveContainer width="100%" height={400}>
+                    <BarChart 
+                      data={satisfactionStats}
+                      layout="horizontal"
+                      margin={{ top: 20, right: 30, left: 150, bottom: 20 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                      <YAxis domain={[0, 5]} />
+                      <XAxis 
+                        type="number" 
+                        domain={[0, 5]}
+                        tick={{ fontSize: 12 }}
+                      />
+                      <YAxis 
+                        type="category" 
+                        dataKey="name" 
+                        tick={{ fontSize: 11 }}
+                        width={140}
+                      />
                       <Tooltip />
                       <Bar dataKey="score" fill="#8884d8" />
                     </BarChart>
