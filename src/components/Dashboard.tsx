@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -7,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { RotateCcw, TrendingUp, Users, Star, Phone, Calendar as CalendarIcon } from 'lucide-react';
 import { useData } from '@/contexts/DataContext';
@@ -405,28 +407,43 @@ const Dashboard: React.FC = () => {
                   <CardTitle>คะแนนความพึงพอใจรายด้าน</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={400}>
-                    <BarChart 
-                      data={satisfactionStats}
-                      layout="horizontal"
-                      margin={{ top: 20, right: 30, left: 150, bottom: 20 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        type="number" 
-                        domain={[0, 5]}
-                        tick={{ fontSize: 12 }}
-                      />
-                      <YAxis 
-                        type="category" 
-                        dataKey="name" 
-                        tick={{ fontSize: 11 }}
-                        width={140}
-                      />
-                      <Tooltip />
-                      <Bar dataKey="score" fill="#8884d8" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[60%]">รายการประเมิน</TableHead>
+                        <TableHead className="text-center">คะแนน</TableHead>
+                        <TableHead className="text-center">เปอร์เซ็นต์</TableHead>
+                        <TableHead className="w-[25%]">แถบคะแนน</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {satisfactionStats.map((stat, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium text-sm">
+                            {stat.name}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Badge variant="outline" className="font-bold">
+                              {stat.score}/5
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <span className="text-sm font-medium">
+                              {Math.round((stat.score / 5) * 100)}%
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <div className="w-full bg-gray-200 rounded-full h-3">
+                              <div 
+                                className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-300"
+                                style={{ width: `${(stat.score / 5) * 100}%` }}
+                              ></div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </CardContent>
               </Card>
             </div>
@@ -582,3 +599,4 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
