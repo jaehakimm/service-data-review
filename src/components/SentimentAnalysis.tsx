@@ -177,19 +177,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px]">
-              <PieChart>
-                <Pie data={sentimentStats} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value" label={({
-                name,
-                percentage
-              }) => `${name}: ${percentage}%`}>
-                  {sentimentStats.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} />)}
-                </Pie>
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </PieChart>
-            </ChartContainer>
-          </CardContent>
+          
         </Card>
 
         <Card>
