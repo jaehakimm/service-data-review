@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,33 +6,31 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, Area, AreaChart, RadialBarChart, RadialBar } from 'recharts';
 import { TrendingUp, TrendingDown, AlertTriangle, MessageSquare } from 'lucide-react';
 import { CustomerData } from '@/types';
-
 const SENTIMENT_COLORS = {
   Positive: '#10b981',
   Negative: '#ef4444',
   Neutral: '#6b7280'
 };
-
 const chartConfig = {
   Positive: {
     label: "Positive",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--chart-1))"
   },
   Negative: {
-    label: "Negative", 
-    color: "hsl(var(--chart-2))",
+    label: "Negative",
+    color: "hsl(var(--chart-2))"
   },
   Neutral: {
     label: "Neutral",
-    color: "hsl(var(--chart-3))",
-  },
+    color: "hsl(var(--chart-3))"
+  }
 };
-
 interface SentimentAnalysisProps {
   data: CustomerData[];
 }
-
-const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
+const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({
+  data
+}) => {
   // คำนวณข้อมูล sentiment รวม
   const sentimentStats = useMemo(() => {
     const stats = data.reduce((acc, item) => {
@@ -41,11 +38,10 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
       acc[sentiment] = (acc[sentiment] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-
     return Object.entries(stats).map(([sentiment, count]) => ({
       name: sentiment,
       value: count,
-      percentage: Math.round((count / data.length) * 100),
+      percentage: Math.round(count / data.length * 100),
       fill: SENTIMENT_COLORS[sentiment as keyof typeof SENTIMENT_COLORS]
     }));
   }, [data]);
@@ -55,15 +51,16 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
     const regionStats = data.reduce((acc, item) => {
       const region = item.ภาค;
       const sentiment = item.sentiment || 'Neutral';
-      
       if (!acc[region]) {
-        acc[region] = { Positive: 0, Negative: 0, Neutral: 0 };
+        acc[region] = {
+          Positive: 0,
+          Negative: 0,
+          Neutral: 0
+        };
       }
       acc[region][sentiment]++;
-      
       return acc;
     }, {} as Record<string, Record<string, number>>);
-
     return Object.entries(regionStats).map(([region, sentiments]) => ({
       name: region,
       Positive: sentiments.Positive || 0,
@@ -76,35 +73,65 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
   // คำนวณเทรนด์ sentiment (สำมารถใช้จากวันที่ถ้ามีข้อมูลเพียงพอ)
   const sentimentTrend = useMemo(() => {
     // สร้างข้อมูลจำลองสำหรับเทรนด์ (ในกรณีจริงจะใช้ข้อมูลจากวันที่)
-    return [
-      { period: 'สัปดาห์ 1', Positive: 65, Negative: 20, Neutral: 15 },
-      { period: 'สัปดาห์ 2', Positive: 70, Negative: 18, Neutral: 12 },
-      { period: 'สัปดาห์ 3', Positive: 68, Negative: 22, Neutral: 10 },
-      { period: 'สัปดาห์ 4', Positive: 72, Negative: 16, Neutral: 12 },
-    ];
+    return [{
+      period: 'สัปดาห์ 1',
+      Positive: 65,
+      Negative: 20,
+      Neutral: 15
+    }, {
+      period: 'สัปดาห์ 2',
+      Positive: 70,
+      Negative: 18,
+      Neutral: 12
+    }, {
+      period: 'สัปดาห์ 3',
+      Positive: 68,
+      Negative: 22,
+      Neutral: 10
+    }, {
+      period: 'สัปดาห์ 4',
+      Positive: 72,
+      Negative: 16,
+      Neutral: 12
+    }];
   }, []);
 
   // วิเคราะห์ประเภทปัญหาของ Negative sentiment
   const negativeIssues = useMemo(() => {
     const negativeData = data.filter(item => item.sentiment === 'Negative');
-    const issueTypes = [
-      { key: 'บริการช้า', label: 'บริการช้า', icon: '⏱️' },
-      { key: 'ระบบช้า', label: 'ระบบช้า', icon: '💻' },
-      { key: 'service mind พนักงาน', label: 'Service Mind พนักงาน', icon: '😞' },
-      { key: 'แซงคิว', label: 'แซงคิว', icon: '🚫' },
-      { key: 'ปรับปรุงสถานที่', label: 'ปรับปรุงสถานที่', icon: '🏢' },
-      { key: 'ไม่สามารถจัดหมวดหมู่ได้', label: 'ไม่สามารถจัดหมวดหมู่ได้', icon: '❓' }
-    ];
-
+    const issueTypes = [{
+      key: 'บริการช้า',
+      label: 'บริการช้า',
+      icon: '⏱️'
+    }, {
+      key: 'ระบบช้า',
+      label: 'ระบบช้า',
+      icon: '💻'
+    }, {
+      key: 'service mind พนักงาน',
+      label: 'Service Mind พนักงาน',
+      icon: '😞'
+    }, {
+      key: 'แซงคิว',
+      label: 'แซงคิว',
+      icon: '🚫'
+    }, {
+      key: 'ปรับปรุงสถานที่',
+      label: 'ปรับปรุงสถานที่',
+      icon: '🏢'
+    }, {
+      key: 'ไม่สามารถจัดหมวดหมู่ได้',
+      label: 'ไม่สามารถจัดหมวดหมู่ได้',
+      icon: '❓'
+    }];
     return issueTypes.map(issue => {
       const count = negativeData.reduce((sum, item) => {
         return sum + (item[issue.key as keyof CustomerData] as number || 0);
       }, 0);
-      
       return {
         name: issue.label,
         value: count,
-        percentage: negativeData.length > 0 ? Math.round((count / negativeData.length) * 100) : 0,
+        percentage: negativeData.length > 0 ? Math.round(count / negativeData.length * 100) : 0,
         icon: issue.icon,
         fill: '#ef4444'
       };
@@ -113,17 +140,12 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
 
   // ความคิดเห็นลูกค้าที่เป็น Negative
   const negativeComments = useMemo(() => {
-    return data
-      .filter(item => item.sentiment === 'Negative' && item.หมายเหตุ && item.หมายเหตุ.trim() !== '')
-      .slice(0, 5); // แสดงแค่ 5 รายการล่าสุด
+    return data.filter(item => item.sentiment === 'Negative' && item.หมายเหตุ && item.หมายเหตุ.trim() !== '').slice(0, 5); // แสดงแค่ 5 รายการล่าสุด
   }, [data]);
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       {/* สถิติภาพรวม */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {sentimentStats.map((stat, index) => (
-          <Card key={index} className="relative overflow-hidden">
+        {sentimentStats.map((stat, index) => <Card key={index} className="relative overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{stat.name}</CardTitle>
               {stat.name === 'Positive' && <TrendingUp className="h-4 w-4 text-green-600" />}
@@ -136,81 +158,22 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                 {stat.percentage}% ของทั้งหมด
               </p>
               <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                <div 
-                  className="h-2 rounded-full transition-all duration-500"
-                  style={{ 
-                    width: `${stat.percentage}%`,
-                    backgroundColor: stat.fill
-                  }}
-                ></div>
+                <div className="h-2 rounded-full transition-all duration-500" style={{
+              width: `${stat.percentage}%`,
+              backgroundColor: stat.fill
+            }}></div>
               </div>
             </CardContent>
-          </Card>
-        ))}
+          </Card>)}
       </div>
 
       {/* Sentiment Donut Chart และ Trend */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>การกระจายของ Sentiment</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px]">
-              <RadialBarChart
-                data={sentimentStats}
-                cx="50%"
-                cy="50%"
-                innerRadius="30%"
-                outerRadius="70%"
-              >
-                <RadialBar dataKey="value" cornerRadius={5} />
-                <ChartTooltip 
-                  content={<ChartTooltipContent hideLabel />} 
-                />
-              </RadialBarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+        
 
         <Card>
-          <CardHeader>
-            <CardTitle>เทรนด์ Sentiment</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px]">
-              <AreaChart data={sentimentTrend}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="period" />
-                <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Area 
-                  type="monotone" 
-                  dataKey="Positive" 
-                  stackId="1"
-                  stroke={SENTIMENT_COLORS.Positive}
-                  fill={SENTIMENT_COLORS.Positive}
-                  fillOpacity={0.8}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="Neutral" 
-                  stackId="1"
-                  stroke={SENTIMENT_COLORS.Neutral}
-                  fill={SENTIMENT_COLORS.Neutral}
-                  fillOpacity={0.8}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="Negative" 
-                  stackId="1"
-                  stroke={SENTIMENT_COLORS.Negative}
-                  fill={SENTIMENT_COLORS.Negative}
-                  fillOpacity={0.8}
-                />
-              </AreaChart>
-            </ChartContainer>
-          </CardContent>
+          
+          
         </Card>
       </div>
 
@@ -248,18 +211,11 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
             <div>
               <ChartContainer config={chartConfig} className="h-[300px]">
                 <PieChart>
-                  <Pie
-                    data={negativeIssues}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label={({ name, percentage }) => `${percentage}%`}
-                  >
-                    {negativeIssues.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
+                  <Pie data={negativeIssues} cx="50%" cy="50%" outerRadius={80} fill="#8884d8" dataKey="value" label={({
+                  name,
+                  percentage
+                }) => `${percentage}%`}>
+                    {negativeIssues.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} />)}
                   </Pie>
                   <ChartTooltip content={<ChartTooltipContent />} />
                 </PieChart>
@@ -270,8 +226,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                 <MessageSquare className="h-4 w-4" />
                 รายละเอียดประเภทปัญหา
               </h4>
-              {negativeIssues.map((issue, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-lg shadow-sm">
+              {negativeIssues.map((issue, index) => <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-lg shadow-sm">
                   <div className="flex items-center gap-3">
                     <span className="text-lg">{issue.icon}</span>
                     <span className="text-sm font-medium">{issue.name}</span>
@@ -280,8 +235,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                     <Badge variant="destructive" className="animate-pulse">{issue.value} ครั้ง</Badge>
                     <span className="text-xs text-gray-600 font-semibold">{issue.percentage}%</span>
                   </div>
-                </div>
-              ))}
+                </div>)}
             </div>
           </div>
         </CardContent>
@@ -298,8 +252,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {negativeComments.map((item, index) => (
-              <div key={index} className="relative p-4 bg-gradient-to-br from-red-50 via-red-25 to-orange-50 border-l-4 border-red-500 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            {negativeComments.map((item, index) => <div key={index} className="relative p-4 bg-gradient-to-br from-red-50 via-red-25 to-orange-50 border-l-4 border-red-500 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                 <div className="absolute top-2 right-2">
                   <Badge variant="outline" className="text-xs bg-white">
                     #{index + 1}
@@ -333,19 +286,14 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                     {item.ไม่สามารถจัดหมวดหมู่ได้ === 1 && <Badge variant="destructive" className="text-xs">❓ อื่นๆ</Badge>}
                   </div>
                 </div>
-              </div>
-            ))}
-            {negativeComments.length === 0 && (
-              <div className="col-span-2 text-center text-gray-500 py-8">
+              </div>)}
+            {negativeComments.length === 0 && <div className="col-span-2 text-center text-gray-500 py-8">
                 <AlertTriangle className="h-12 w-12 mx-auto mb-2 text-gray-400" />
                 <p>ไม่มีความคิดเห็นลูกค้าที่เป็น Negative</p>
-              </div>
-            )}
+              </div>}
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default SentimentAnalysis;
