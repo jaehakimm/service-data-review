@@ -370,13 +370,14 @@ const Dashboard: React.FC = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
+              {/* Service Types Chart */}
               <Card className="shadow-lg">
                 <CardHeader>
                   <CardTitle>การใช้บริการแต่ละประเภท</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={400}>
                     <PieChart>
                       <Pie
                         data={serviceTypeStats}
@@ -384,7 +385,7 @@ const Dashboard: React.FC = () => {
                         cy="50%"
                         labelLine={false}
                         label={({ name, value }) => `${value}`}
-                        outerRadius={80}
+                        outerRadius={120}
                         fill="#8884d8"
                         dataKey="value"
                       >
@@ -399,18 +400,39 @@ const Dashboard: React.FC = () => {
                 </CardContent>
               </Card>
 
+              {/* Satisfaction Scores Chart */}
               <Card className="shadow-lg">
                 <CardHeader>
                   <CardTitle>คะแนนความพึงพอใจรายด้าน</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={satisfactionStats} layout="horizontal">
+                  <ResponsiveContainer width="100%" height={500}>
+                    <BarChart 
+                      data={satisfactionStats} 
+                      layout="horizontal"
+                      margin={{ top: 20, right: 30, left: 250, bottom: 5 }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis type="number" domain={[0, 5]} />
-                      <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={200} />
-                      <Tooltip />
-                      <Bar dataKey="score" fill="#8884d8" />
+                      <XAxis 
+                        type="number" 
+                        domain={[0, 5]} 
+                        tick={{ fontSize: 12 }}
+                      />
+                      <YAxis 
+                        type="category" 
+                        dataKey="name" 
+                        tick={{ fontSize: 11 }} 
+                        width={240}
+                      />
+                      <Tooltip 
+                        formatter={(value: any) => [`${value}/5`, 'คะแนน']}
+                        labelStyle={{ fontSize: '12px' }}
+                      />
+                      <Bar 
+                        dataKey="score" 
+                        fill="#8884d8" 
+                        radius={[0, 4, 4, 0]}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
