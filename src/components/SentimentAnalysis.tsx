@@ -562,7 +562,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({
 
             {/* ประเภทปัญหา Filters - เหลือแค่ มี/ไม่มี */}
             <div className="mt-4">
-              <label className="text-sm font-medium mb-3 block">ประเภทปัญหา (เลือกหัวข้อปัญหาได้มากกว่า 1 หัวข้อ)</label>
+              <label className="text-sm font-medium mb-3 block">ประเภทปัญหา (เลือกปัญหาได้มากกว่า 1 หัวข้อ)</label>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 {[{
                 key: 'บริการช้า',
