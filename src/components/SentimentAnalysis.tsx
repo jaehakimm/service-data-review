@@ -1,18 +1,18 @@
-
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { TrendingUp, TrendingDown, AlertTriangle, MessageSquare } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertTriangle, MessageSquare, Filter, X } from 'lucide-react';
 import { CustomerData } from '@/types';
-
-const SENTIMENT_COLORS = {
-  Positive: '#10b981',
-  Negative: '#ef4444',
-  Neutral: '#6b7280'
-};
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 // สีสำหรับประเภทปัญหาต่างๆ
 const ISSUE_COLORS = [
@@ -43,7 +43,33 @@ interface SentimentAnalysisProps {
   data: CustomerData[];
 }
 
+interface FilterState {
+  หน่วยให้บริการ: string;
+  ภาค: string;
+  วันที่From: Date | undefined;
+  วันที่To: Date | undefined;
+  บริการช้า: boolean | null;
+  ระบบช้า: boolean | null;
+  serviceMind: boolean | null;
+  แซงคิว: boolean | null;
+  ปรับปรุงสถานที่: boolean | null;
+  ไม่สามารถจัดหมวดหมู่ได้: boolean | null;
+}
+
 const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
+  const [filters, setFilters] = useState<FilterState>({
+    หน่วยให้บริการ: '',
+    ภาค: '',
+    วันที่From: undefined,
+    วันที่To: undefined,
+    บริการช้า: null,
+    ระบบช้า: null,
+    serviceMind: null,
+    แซงคิว: null,
+    ปรับปรุงสถานที่: null,
+    ไม่สามารถจัดหมวดหมู่ได้: null,
+  });
+
   // คำนวณข้อมูล sentiment รวม
   const sentimentStats = useMemo(() => {
     const stats = data.reduce((acc, item) => {
@@ -94,10 +120,10 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
     const issueTypes = [
       { key: 'บริการช้า', label: 'บริการช้า', icon: '⏱️' },
       { key: 'ระบบช้า', label: 'ระบบช้า', icon: '💻' },
-      { key: 'service mind พนักงาน', label: 'Service Mind พนักงาน', icon: '😞' },
+      { key: 'serviceMind', label: 'Service Mind', icon: '😞' },
       { key: 'แซงคิว', label: 'แซงคิว', icon: '🚫' },
       { key: 'ปรับปรุงสถานที่', label: 'ปรับปรุงสถานที่', icon: '🏢' },
-      { key: 'ไม่สามารถจัดหมวดหมู่ได้', label: 'ไม่สามารถจัดหมวดหมู่ได้', icon: '❓' }
+      { key: 'ไม่สามารถจัดหมวดหมู่ได้', label: 'อื่นๆ', icon: '❓' }
     ];
     return issueTypes.map((issue, index) => {
       const count = negativeData.reduce((sum, item) => {
@@ -113,12 +139,88 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
     }).filter(issue => issue.value > 0).sort((a, b) => b.value - a.value);
   }, [data]);
 
-  // ความคิดเห็นลูกค้าที่เป็น Negative
-  const negativeComments = useMemo(() => {
-    return data
-      .filter(item => item.sentiment === 'Negative' && item.หมายเหตุ && item.หมายเหตุ.trim() !== '')
-      .slice(0, 5);
+  // ข้อมูลสำหรับ dropdown filters
+  const uniqueUnits = useMemo(() => {
+    return Array.from(new Set(data.map(item => item.หน่วยให้บริการ))).sort();
   }, [data]);
+
+  const uniqueRegions = useMemo(() => {
+    return Array.from(new Set(data.map(item => item.ภาค))).sort();
+  }, [data]);
+
+  // ความคิดเห็นลูกค้าที่เป็น Negative พร้อม filters
+  const filteredNegativeComments = useMemo(() => {
+    let filtered = data.filter(item => item.sentiment === 'Negative' && item.หมายเหตุ && item.หมายเหตุ.trim() !== '');
+    
+    // Filter by หน่วยให้บริการ
+    if (filters.หน่วยให้บริการ) {
+      filtered = filtered.filter(item => item.หน่วยให้บริการ === filters.หน่วยให้บริการ);
+    }
+    
+    // Filter by ภาค
+    if (filters.ภาค) {
+      filtered = filtered.filter(item => item.ภาค === filters.ภาค);
+    }
+    
+    // Filter by วันที่
+    if (filters.วันที่From) {
+      const fromDate = format(filters.วันที่From, 'yyyy-MM-dd');
+      filtered = filtered.filter(item => item.วันที่ >= fromDate);
+    }
+    
+    if (filters.วันที่To) {
+      const toDate = format(filters.วันที่To, 'yyyy-MM-dd');
+      filtered = filtered.filter(item => item.วันที่ <= toDate);
+    }
+    
+    // Filter by ประเภทปัญหา
+    if (filters.บริการช้า !== null) {
+      filtered = filtered.filter(item => filters.บริการช้า ? item.บริการช้า === 1 : item.บริการช้า !== 1);
+    }
+    
+    if (filters.ระบบช้า !== null) {
+      filtered = filtered.filter(item => filters.ระบบช้า ? item.ระบบช้า === 1 : item.ระบบช้า !== 1);
+    }
+    
+    if (filters.serviceMind !== null) {
+      filtered = filtered.filter(item => filters.serviceMind ? item['service mind พนักงาน'] === 1 : item['service mind พนักงาน'] !== 1);
+    }
+    
+    if (filters.แซงคิว !== null) {
+      filtered = filtered.filter(item => filters.แซงคิว ? item.แซงคิว === 1 : item.แซงคิว !== 1);
+    }
+    
+    if (filters.ปรับปรุงสถานที่ !== null) {
+      filtered = filtered.filter(item => filters.ปรับปรุงสถานที่ ? item.ปรับปรุงสถานที่ === 1 : item.ปรับปรุงสถานที่ !== 1);
+    }
+    
+    if (filters.ไม่สามารถจัดหมวดหมู่ได้ !== null) {
+      filtered = filtered.filter(item => filters.ไม่สามารถจัดหมวดหมู่ได้ ? item.ไม่สามารถจัดหมวดหมู่ได้ === 1 : item.ไม่สามารถจัดหมวดหมู่ได้ !== 1);
+    }
+    
+    return filtered;
+  }, [data, filters]);
+
+  const clearFilters = () => {
+    setFilters({
+      หน่วยให้บริการ: '',
+      ภาค: '',
+      วันที่From: undefined,
+      วันที่To: undefined,
+      บริการช้า: null,
+      ระบบช้า: null,
+      serviceMind: null,
+      แซงคิว: null,
+      ปรับปรุงสถานที่: null,
+      ไม่สามารถจัดหมวดหมู่ได้: null,
+    });
+  };
+
+  const hasActiveFilters = Object.values(filters).some(value => 
+    (typeof value === 'string' && value !== '') || 
+    (typeof value === 'boolean') ||
+    (value instanceof Date)
+  );
 
   return (
     <div className="space-y-6">
@@ -431,20 +533,173 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
         </CardContent>
       </Card>
 
-      {/* ความคิดเห็นลูกค้าที่เป็น Negative - Cards Layout */}
+      {/* ความคิดเห็นลูกค้าที่เป็น Negative พร้อม Filters */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5 text-red-500" />
             ความคิดเห็นลูกค้า (Negative Sentiment)
             <Badge variant="destructive" className="ml-auto">
-              {negativeComments.length} รายการ
+              {filteredNegativeComments.length} รายการ
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {negativeComments.map((item, index) => (
+          {/* Filter Section */}
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-semibold flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                ตัวกรองข้อมูล
+              </h4>
+              {hasActiveFilters && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="text-red-600 hover:text-red-700"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  ล้างตัวกรอง
+                </Button>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {/* หน่วยให้บริการ Filter */}
+              <div>
+                <label className="text-sm font-medium mb-1 block">หน่วยให้บริการ</label>
+                <Select
+                  value={filters.หน่วยให้บริการ}
+                  onValueChange={(value) => setFilters(prev => ({ ...prev, หน่วยให้บริการ: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="ทั้งหมด" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">ทั้งหมด</SelectItem>
+                    {uniqueUnits.map(unit => (
+                      <SelectItem key={unit} value={unit}>{unit}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* ภาค Filter */}
+              <div>
+                <label className="text-sm font-medium mb-1 block">ภาค</label>
+                <Select
+                  value={filters.ภาค}
+                  onValueChange={(value) => setFilters(prev => ({ ...prev, ภาค: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="ทั้งหมด" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">ทั้งหมด</SelectItem>
+                    {uniqueRegions.map(region => (
+                      <SelectItem key={region} value={region}>{region}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* วันที่เริ่มต้น */}
+              <div>
+                <label className="text-sm font-medium mb-1 block">วันที่เริ่มต้น</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !filters.วันที่From && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {filters.วันที่From ? format(filters.วันที่From, "dd/MM/yyyy") : "เลือกวันที่"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={filters.วันที่From}
+                      onSelect={(date) => setFilters(prev => ({ ...prev, วันที่From: date }))}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* วันที่สิ้นสุด */}
+              <div>
+                <label className="text-sm font-medium mb-1 block">วันที่สิ้นสุด</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !filters.วันที่To && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {filters.วันที่To ? format(filters.วันที่To, "dd/MM/yyyy") : "เลือกวันที่"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={filters.วันที่To}
+                      onSelect={(date) => setFilters(prev => ({ ...prev, วันที่To: date }))}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+
+            {/* ประเภทปัญหา Filters */}
+            <div className="mt-4">
+              <label className="text-sm font-medium mb-2 block">ประเภทปัญหา</label>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+                {[
+                  { key: 'บริการช้า', label: 'บริการช้า', icon: '⏱️' },
+                  { key: 'ระบบช้า', label: 'ระบบช้า', icon: '💻' },
+                  { key: 'serviceMind', label: 'Service Mind', icon: '😞' },
+                  { key: 'แซงคิว', label: 'แซงคิว', icon: '🚫' },
+                  { key: 'ปรับปรุงสถานที่', label: 'ปรับปรุงสถานที่', icon: '🏢' },
+                  { key: 'ไม่สามารถจัดหมวดหมู่ได้', label: 'อื่นๆ', icon: '❓' }
+                ].map((issue) => (
+                  <div key={issue.key} className="flex flex-col gap-1">
+                    <span className="text-xs text-gray-600">{issue.icon} {issue.label}</span>
+                    <Select
+                      value={filters[issue.key as keyof FilterState] === null ? "" : filters[issue.key as keyof FilterState] ? "true" : "false"}
+                      onValueChange={(value) => {
+                        const boolValue = value === "" ? null : value === "true";
+                        setFilters(prev => ({ ...prev, [issue.key]: boolValue }));
+                      }}
+                    >
+                      <SelectTrigger className="h-8">
+                        <SelectValue placeholder="ทั้งหมด" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">ทั้งหมด</SelectItem>
+                        <SelectItem value="true">มี</SelectItem>
+                        <SelectItem value="false">ไม่มี</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Comments Display */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[800px] overflow-y-auto">
+            {filteredNegativeComments.map((item, index) => (
               <div 
                 key={index} 
                 className="relative p-4 bg-gradient-to-br from-red-50 via-red-25 to-orange-50 border-l-4 border-red-500 rounded-lg shadow-md hover:shadow-lg transition-shadow"
@@ -495,10 +750,10 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                 </div>
               </div>
             ))}
-            {negativeComments.length === 0 && (
+            {filteredNegativeComments.length === 0 && (
               <div className="col-span-2 text-center text-gray-500 py-8">
                 <AlertTriangle className="h-12 w-12 mx-auto mb-2 text-gray-400" />
-                <p>ไม่มีความคิดเห็นลูกค้าที่เป็น Negative</p>
+                <p>ไม่มีความคิดเห็นลูกค้าที่ตรงกับเงื่อนไขการกรอง</p>
               </div>
             )}
           </div>
