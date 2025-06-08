@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -56,12 +55,12 @@ interface FilterState {
   ภาค: string;
   วันที่From: Date | undefined;
   วันที่To: Date | undefined;
-  บริการช้า: boolean | null;
-  ระบบช้า: boolean | null;
-  serviceMind: boolean | null;
-  แซงคิว: boolean | null;
-  ปรับปรุงสถานที่: boolean | null;
-  ไม่สามารถจัดหมวดหมู่ได้: boolean | null;
+  บริการช้า: boolean;
+  ระบบช้า: boolean;
+  serviceMind: boolean;
+  แซงคิว: boolean;
+  ปรับปรุงสถานที่: boolean;
+  ไม่สามารถจัดหมวดหมู่ได้: boolean;
 }
 
 const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
@@ -70,12 +69,12 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
     ภาค: 'all',
     วันที่From: undefined,
     วันที่To: undefined,
-    บริการช้า: null, // null = แสดงทั้งหมด (default)
-    ระบบช้า: null,
-    serviceMind: null,
-    แซงคิว: null,
-    ปรับปรุงสถานที่: null,
-    ไม่สามารถจัดหมวดหมู่ได้: null,
+    บริการช้า: false, // default เป็น "ไม่มี"
+    ระบบช้า: false,
+    serviceMind: false,
+    แซงคิว: false,
+    ปรับปรุงสถานที่: false,
+    ไม่สามารถจัดหมวดหมู่ได้: false,
   });
 
   // คำนวณข้อมูล sentiment รวม
@@ -181,30 +180,13 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
       filtered = filtered.filter(item => item.วันที่ <= toDate);
     }
     
-    // Filter by ประเภทปัญหา - เปลี่ยนเป็น: null = แสดงทั้งหมด, true = มี, false = ไม่มี
-    if (filters.บริการช้า !== null) {
-      filtered = filtered.filter(item => filters.บริการช้า ? item.บริการช้า === 1 : item.บริการช้า !== 1);
-    }
-    
-    if (filters.ระบบช้า !== null) {
-      filtered = filtered.filter(item => filters.ระบบช้า ? item.ระบบช้า === 1 : item.ระบบช้า !== 1);
-    }
-    
-    if (filters.serviceMind !== null) {
-      filtered = filtered.filter(item => filters.serviceMind ? item['service mind พนักงาน'] === 1 : item['service mind พนักงาน'] !== 1);
-    }
-    
-    if (filters.แซงคิว !== null) {
-      filtered = filtered.filter(item => filters.แซงคิว ? item.แซงคิว === 1 : item.แซงคิว !== 1);
-    }
-    
-    if (filters.ปรับปรุงสถานที่ !== null) {
-      filtered = filtered.filter(item => filters.ปรับปรุงสถานที่ ? item.ปรับปรุงสถานที่ === 1 : item.ปรับปรุงสถานที่ !== 1);
-    }
-    
-    if (filters.ไม่สามารถจัดหมวดหมู่ได้ !== null) {
-      filtered = filtered.filter(item => filters.ไม่สามารถจัดหมวดหมู่ได้ ? item.ไม่สามารถจัดหมวดหมู่ได้ === 1 : item.ไม่สามารถจัดหมวดหมู่ได้ !== 1);
-    }
+    // Filter by ประเภทปัญหา - true = มี, false = ไม่มี
+    filtered = filtered.filter(item => filters.บริการช้า ? item.บริการช้า === 1 : item.บริการช้า !== 1);
+    filtered = filtered.filter(item => filters.ระบบช้า ? item.ระบบช้า === 1 : item.ระบบช้า !== 1);
+    filtered = filtered.filter(item => filters.serviceMind ? item['service mind พนักงาน'] === 1 : item['service mind พนักงาน'] !== 1);
+    filtered = filtered.filter(item => filters.แซงคิว ? item.แซงคิว === 1 : item.แซงคิว !== 1);
+    filtered = filtered.filter(item => filters.ปรับปรุงสถานที่ ? item.ปรับปรุงสถานที่ === 1 : item.ปรับปรุงสถานที่ !== 1);
+    filtered = filtered.filter(item => filters.ไม่สามารถจัดหมวดหมู่ได้ ? item.ไม่สามารถจัดหมวดหมู่ได้ === 1 : item.ไม่สามารถจัดหมวดหมู่ได้ !== 1);
     
     return filtered;
   }, [data, filters]);
@@ -215,18 +197,18 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
       ภาค: 'all',
       วันที่From: undefined,
       วันที่To: undefined,
-      บริการช้า: null,
-      ระบบช้า: null,
-      serviceMind: null,
-      แซงคิว: null,
-      ปรับปรุงสถานที่: null,
-      ไม่สามารถจัดหมวดหมู่ได้: null,
+      บริการช้า: false,
+      ระบบช้า: false,
+      serviceMind: false,
+      แซงคิว: false,
+      ปรับปรุงสถานที่: false,
+      ไม่สามารถจัดหมวดหมู่ได้: false,
     });
   };
 
   const hasActiveFilters = Object.values(filters).some(value => 
     (typeof value === 'string' && value !== 'all') || 
-    (typeof value === 'boolean') ||
+    (typeof value === 'boolean' && value === true) ||
     (value instanceof Date)
   );
 
@@ -386,18 +368,15 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-                        {region.Positive} ({region.PositivePercent}%)
-                      </Badge>
+                        {region.Positive} ({region.PositivePercent}%)</Badge>
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge className="bg-red-100 text-red-800 hover:bg-red-200">
-                        {region.Negative} ({region.NegativePercent}%)
-                      </Badge>
+                        {region.Negative} ({region.NegativePercent}%)</Badge>
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">
-                        {region.Neutral} ({region.NeutralPercent}%)
-                      </Badge>
+                        {region.Neutral} ({region.NeutralPercent}%)</Badge>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -669,9 +648,9 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
               </div>
             </div>
 
-            {/* ประเภทปัญหา Filters - เปลี่ยนเป็น Toggle Buttons */}
+            {/* ประเภทปัญหา Filters - เหลือแค่ มี/ไม่มี */}
             <div className="mt-4">
-              <label className="text-sm font-medium mb-3 block">ประเภทปัญหา (คลิก = มี, ไม่คลิก = ไม่มี, Default = มีทั้งหมด)</label>
+              <label className="text-sm font-medium mb-3 block">ประเภทปัญหา (คลิก = มี, ไม่คลิก = ไม่มี)</label>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 {[
                   { key: 'บริการช้า', label: 'บริการช้า', icon: '⏱️' },
@@ -681,40 +660,27 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
                   { key: 'ปรับปรุงสถานที่', label: 'ปรับปรุงสถานที่', icon: '🏢' },
                   { key: 'ไม่สามารถจัดหมวดหมู่ได้', label: 'อื่นๆ', icon: '❓' }
                 ].map((issue) => {
-                  const filterValue = filters[issue.key as keyof FilterState] as boolean | null;
+                  const filterValue = filters[issue.key as keyof FilterState] as boolean;
                   
                   return (
                     <div key={issue.key} className="flex flex-col gap-2">
                       <span className="text-xs text-gray-600 text-center">{issue.icon}</span>
                       <Button
-                        variant={filterValue === null ? "outline" : filterValue ? "default" : "secondary"}
+                        variant={filterValue ? "default" : "secondary"}
                         size="sm"
                         onClick={() => {
-                          const currentValue = filters[issue.key as keyof FilterState] as boolean | null;
-                          let newValue: boolean | null;
-                          
-                          if (currentValue === null) {
-                            newValue = true; // จาก "มีทั้งหมด" ไป "มี"
-                          } else if (currentValue === true) {
-                            newValue = false; // จาก "มี" ไป "ไม่มี"
-                          } else {
-                            newValue = null; // จาก "ไม่มี" ไป "มีทั้งหมด"
-                          }
-                          
-                          setFilters(prev => ({ ...prev, [issue.key]: newValue }));
+                          setFilters(prev => ({ ...prev, [issue.key]: !filterValue }));
                         }}
                         className={cn(
                           "h-12 text-xs font-medium transition-all duration-200 flex flex-col gap-1",
-                          filterValue === null && "border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100",
-                          filterValue === true && "bg-green-600 hover:bg-green-700 text-white border-green-600",
-                          filterValue === false && "bg-red-100 hover:bg-red-200 text-red-800 border-red-300"
+                          filterValue ? "bg-green-600 hover:bg-green-700 text-white border-green-600" : "bg-red-100 hover:bg-red-200 text-red-800 border-red-300"
                         )}
                       >
                         <div className="text-center leading-tight">
                           {issue.label}
                         </div>
                         <div className="text-xs opacity-80">
-                          {filterValue === null ? "ทั้งหมด" : filterValue ? "มี" : "ไม่มี"}
+                          {filterValue ? "มี" : "ไม่มี"}
                         </div>
                       </Button>
                     </div>
