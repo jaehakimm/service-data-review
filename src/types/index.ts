@@ -22,6 +22,13 @@ export interface CustomerData {
   สรุป: string;
   หมายเหตุ: string;
   ลูกค้าต้องการให้ติดต่อกลับ: string;
+  sentiment: 'Positive' | 'Negative' | 'Neutral';
+  บริการช้า: number;
+  ระบบช้า: number;
+  'service mind พนักงาน': number;
+  แซงคิว: number;
+  ปรับปรุงสถานที่: number;
+  ไม่สามารถจัดหมวดหมู่ได้: number;
 }
 
 export interface ColumnMapping {
@@ -52,5 +59,12 @@ export const COLUMN_DEFINITIONS = {
   ข้อ7: { type: 'number', description: 'ข้อ7 (ความพึงพอใจต่อความประทับใจในการเข้าใช้บริการที่ธนาคารออมสินสาขา)' },
   สรุป: { type: 'text', description: 'สรุป' },
   หมายเหตุ: { type: 'text', description: 'หมายเหตุ (คอมเม้นลูกค้า)' },
-  ลูกค้าต้องการให้ติดต่อกลับ: { type: 'text', description: 'ลูกค้าต้องการให้ติดต่อกลับ' }
+  ลูกค้าต้องการให้ติดต่อกลับ: { type: 'text', description: 'ลูกค้าต้องการให้ติดต่อกลับ' },
+  sentiment: { type: 'text', description: 'ความรู้สึก (Positive/Negative/Neutral)' },
+  บริการช้า: { type: 'number', description: 'บริการช้า (0=ไม่มี, 1=มี)' },
+  ระบบช้า: { type: 'number', description: 'ระบบช้า (0=ไม่มี, 1=มี)' },
+  'service mind พนักงาน': { type: 'number', description: 'service mind พนักงาน (0=ไม่มี, 1=มี)' },
+  แซงคิว: { type: 'number', description: 'แซงคิว (0=ไม่มี, 1=มี)' },
+  ปรับปรุงสถานที่: { type: 'number', description: 'ปรับปรุงสถานที่ (0=ไม่มี, 1=มี)' },
+  ไม่สามารถจัดหมวดหมู่ได้: { type: 'number', description: 'ไม่สามารถจัดหมวดหมู่ได้ (0=ไม่มี, 1=มี)' }
 } as const;

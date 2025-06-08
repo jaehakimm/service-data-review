@@ -1,5 +1,3 @@
-
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -15,6 +13,7 @@ import { useData } from '@/contexts/DataContext';
 import { CustomerData } from '@/types';
 import { format, parseISO, isAfter, isBefore, isEqual } from 'date-fns';
 import { cn } from '@/lib/utils';
+import SentimentAnalysis from './SentimentAnalysis';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1', '#d084d0', '#ffb347'];
 
@@ -365,9 +364,10 @@ const Dashboard: React.FC = () => {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">ภาพรวม</TabsTrigger>
             <TabsTrigger value="satisfaction">ความพึงพอใจ</TabsTrigger>
+            <TabsTrigger value="sentiment">Sentiment Analysis</TabsTrigger>
             <TabsTrigger value="regional">เปรียบเทียบภาค</TabsTrigger>
             <TabsTrigger value="feedback">ความคิดเห็น</TabsTrigger>
           </TabsList>
@@ -474,6 +474,10 @@ const Dashboard: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="sentiment" className="space-y-6">
+            <SentimentAnalysis data={filteredData} />
           </TabsContent>
 
           <TabsContent value="regional" className="space-y-6">
@@ -599,4 +603,3 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-
