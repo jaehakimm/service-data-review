@@ -1,9 +1,10 @@
+
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line, Area, AreaChart, RadialBarChart, RadialBar } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { TrendingUp, TrendingDown, AlertTriangle, MessageSquare } from 'lucide-react';
 import { CustomerData } from '@/types';
 
@@ -77,17 +78,6 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
     }).sort((a, b) => b.total - a.total);
   }, [data]);
 
-  // คำนวณเทรนด์ sentiment (สำมารถใช้จากวันที่ถ้ามีข้อมูลเพียงพอ)
-  const sentimentTrend = useMemo(() => {
-    // สร้างข้อมูลจำลองสำหรับเทรนด์ (ในกรณีจริงจะใช้ข้อมูลจากวันที่)
-    return [
-      { period: 'สัปดาห์ 1', Positive: 65, Negative: 20, Neutral: 15 },
-      { period: 'สัปดาห์ 2', Positive: 70, Negative: 18, Neutral: 12 },
-      { period: 'สัปดาห์ 3', Positive: 68, Negative: 22, Neutral: 10 },
-      { period: 'สัปดาห์ 4', Positive: 72, Negative: 16, Neutral: 12 }
-    ];
-  }, []);
-
   // วิเคราะห์ประเภทปัญหาของ Negative sentiment
   const negativeIssues = useMemo(() => {
     const negativeData = data.filter(item => item.sentiment === 'Negative');
@@ -151,75 +141,99 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({ data }) => {
         ))}
       </div>
 
-      {/* Sentiment Donut Chart และ Trend */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>เทรนด์ Sentiment ตามช่วงเวลา</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px]">
-              <AreaChart data={sentimentTrend}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="period" />
-                <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Legend />
-                <Area type="monotone" dataKey="Positive" stackId="1" stroke={SENTIMENT_COLORS.Positive} fill={SENTIMENT_COLORS.Positive} />
-                <Area type="monotone" dataKey="Neutral" stackId="1" stroke={SENTIMENT_COLORS.Neutral} fill={SENTIMENT_COLORS.Neutral} />
-                <Area type="monotone" dataKey="Negative" stackId="1" stroke={SENTIMENT_COLORS.Negative} fill={SENTIMENT_COLORS.Negative} />
-              </AreaChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Bar Chart สำหรับเปรียบเทียบ Sentiment แยกตามภาค */}
+      {/* Bar Chart สำหรับเปรียบเทียบ Sentiment แยกตามภาค - ขนาดใหญ่และสวยงาม */}
       <Card>
         <CardHeader>
-          <CardTitle>เปรียบเทียบ Sentiment แยกตามภาค</CardTitle>
+          <CardTitle className="text-xl font-bold">เปรียบเทียบ Sentiment แยกตามภาค</CardTitle>
           <p className="text-sm text-muted-foreground">
             การกระจายของ Sentiment ในแต่ละภาค (เรียงตามจำนวนรวม)
           </p>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-[400px]">
+          <ChartContainer config={chartConfig} className="h-[500px] w-full">
             <BarChart 
               data={sentimentByRegion} 
-              margin={{ top: 20, right: 30, left: 40, bottom: 80 }}
+              margin={{ top: 20, right: 30, left: 40, bottom: 100 }}
+              barCategoryGap="20%"
             >
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" opacity={0.5} />
               <XAxis 
                 dataKey="name" 
                 angle={-45} 
                 textAnchor="end" 
-                height={100} 
+                height={120} 
                 interval={0} 
-                fontSize={12} 
+                fontSize={13}
+                fontWeight={500}
+                stroke="#64748b"
+                tick={{ dy: 10 }}
               />
-              <YAxis />
+              <YAxis 
+                fontSize={12}
+                fontWeight={500}
+                stroke="#64748b"
+                axisLine={false}
+                tickLine={false}
+              />
               <ChartTooltip 
-                content={<ChartTooltipContent />} 
-                formatter={(value, name) => [value, name]} 
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    return (
+                      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 min-w-[200px]">
+                        <div className="font-semibold text-gray-800 mb-2">{label}</div>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="text-green-600">✓ Positive:</span>
+                            <span className="font-medium">{data.Positive} ({data.PositivePercent}%)</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-red-600">✗ Negative:</span>
+                            <span className="font-medium">{data.Negative} ({data.NegativePercent}%)</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">○ Neutral:</span>
+                            <span className="font-medium">{data.Neutral} ({data.NeutralPercent}%)</span>
+                          </div>
+                          <div className="border-t pt-1 mt-2 flex justify-between items-center font-semibold">
+                            <span>รวม:</span>
+                            <span>{data.total}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
               />
-              <Legend />
+              <Legend 
+                wrapperStyle={{ paddingTop: '20px' }}
+                iconType="rect"
+                formatter={(value) => <span className="font-medium text-gray-700">{value}</span>}
+              />
               <Bar 
                 dataKey="Positive" 
                 fill={SENTIMENT_COLORS.Positive} 
-                name="Positive" 
-                radius={[2, 2, 0, 0]} 
+                name="Positive"
+                radius={[4, 4, 0, 0]}
+                stroke="#059669"
+                strokeWidth={1}
               />
               <Bar 
                 dataKey="Neutral" 
                 fill={SENTIMENT_COLORS.Neutral} 
-                name="Neutral" 
-                radius={[2, 2, 0, 0]} 
+                name="Neutral"
+                radius={[4, 4, 0, 0]}
+                stroke="#475569"
+                strokeWidth={1}
               />
               <Bar 
                 dataKey="Negative" 
                 fill={SENTIMENT_COLORS.Negative} 
-                name="Negative" 
-                radius={[2, 2, 0, 0]} 
+                name="Negative"
+                radius={[4, 4, 0, 0]}
+                stroke="#dc2626"
+                strokeWidth={1}
               />
             </BarChart>
           </ChartContainer>
