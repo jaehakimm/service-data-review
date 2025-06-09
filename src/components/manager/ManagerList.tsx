@@ -2,12 +2,13 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trash2, Edit } from "lucide-react";
+import { Pencil, Trash2, Check, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
-interface BranchManager {
+interface Manager {
   id: string;
   name: string;
   branch: string;
@@ -15,30 +16,26 @@ interface BranchManager {
 }
 
 interface ManagerListProps {
-  managers: BranchManager[];
+  managers: Manager[];
   onUpdate: (id: string, manager: { name: string; branch: string; email: string }) => void;
   onDelete: (id: string) => void;
 }
 
 const ManagerList: React.FC<ManagerListProps> = ({ managers, onUpdate, onDelete }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingManager, setEditingManager] = useState({
-    name: '',
-    branch: '',
-    email: ''
-  });
+  const [editingData, setEditingData] = useState({ name: '', branch: '', email: '' });
 
-  const startEdit = (manager: BranchManager) => {
+  const handleEdit = (manager: Manager) => {
     setEditingId(manager.id);
-    setEditingManager({
+    setEditingData({
       name: manager.name,
       branch: manager.branch,
       email: manager.email
     });
   };
 
-  const saveEdit = (id: string) => {
-    if (!editingManager.name.trim() || !editingManager.branch.trim() || !editingManager.email.trim()) {
+  const handleSave = () => {
+    if (!editingData.name.trim() || !editingData.branch.trim() || !editingData.email.trim()) {
       toast({
         title: "ข้อผิดพลาด",
         description: "กรุณากรอกข้อมูลให้ครบถ้วน",
@@ -47,118 +44,173 @@ const ManagerList: React.FC<ManagerListProps> = ({ managers, onUpdate, onDelete 
       return;
     }
 
-    if (!editingManager.email.includes('@')) {
-      toast({
-        title: "ข้อผิดพลาด",
-        description: "กรุณากรอกอีเมลให้ถูกต้อง",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    onUpdate(id, {
-      name: editingManager.name.trim(),
-      branch: editingManager.branch.trim(),
-      email: editingManager.email.trim()
+    onUpdate(editingId!, {
+      name: editingData.name.trim(),
+      branch: editingData.branch.trim(),
+      email: editingData.email.trim()
     });
-
+    
     setEditingId(null);
-    setEditingManager({ name: '', branch: '', email: '' });
+    setEditingData({ name: '', branch: '', email: '' });
   };
 
-  const cancelEdit = () => {
+  const handleCancel = () => {
     setEditingId(null);
-    setEditingManager({ name: '', branch: '', email: '' });
+    setEditingData({ name: '', branch: '', email: '' });
+  };
+
+  const handleDelete = (id: string) => {
+    onDelete(id);
   };
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>รายการผู้จัดการสาขา</CardTitle>
-        <CardDescription>จัดการข้อมูลผู้จัดการสาขาที่มีอยู่</CardDescription>
+      <CardHeader className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <CardTitle className="text-lg sm:text-xl">รายการผู้จัดการสาขา</CardTitle>
+          <Badge variant="outline" className="w-fit">
+            {managers.length} คน
+          </Badge>
+        </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
         {managers.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            ไม่มีข้อมูลผู้จัดการสาขา
+          <div className="text-center py-6 sm:py-8 text-muted-foreground text-sm sm:text-base">
+            ยังไม่มีข้อมูลผู้จัดการ
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ชื่อผู้จัดการ</TableHead>
-                <TableHead>สาขา</TableHead>
-                <TableHead>อีเมล</TableHead>
-                <TableHead className="w-[120px]">การจัดการ</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <div className="overflow-x-auto">
+            {/* Mobile Card View */}
+            <div className="block sm:hidden space-y-4">
               {managers.map((manager) => (
-                <TableRow key={manager.id}>
-                  <TableCell>
-                    {editingId === manager.id ? (
+                <div key={manager.id} className="border rounded-lg p-4">
+                  {editingId === manager.id ? (
+                    <div className="space-y-3">
                       <Input
-                        value={editingManager.name}
-                        onChange={(e) => setEditingManager({ ...editingManager, name: e.target.value })}
+                        placeholder="ชื่อ-นามสกุล"
+                        value={editingData.name}
+                        onChange={(e) => setEditingData({ ...editingData, name: e.target.value })}
+                        className="text-sm"
                       />
-                    ) : (
-                      manager.name
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {editingId === manager.id ? (
                       <Input
-                        value={editingManager.branch}
-                        onChange={(e) => setEditingManager({ ...editingManager, branch: e.target.value })}
+                        placeholder="ชื่อสาขา"
+                        value={editingData.branch}
+                        onChange={(e) => setEditingData({ ...editingData, branch: e.target.value })}
+                        className="text-sm"
                       />
-                    ) : (
-                      manager.branch
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {editingId === manager.id ? (
                       <Input
                         type="email"
-                        value={editingManager.email}
-                        onChange={(e) => setEditingManager({ ...editingManager, email: e.target.value })}
+                        placeholder="อีเมล"
+                        value={editingData.email}
+                        onChange={(e) => setEditingData({ ...editingData, email: e.target.value })}
+                        className="text-sm"
                       />
-                    ) : (
-                      manager.email
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {editingId === manager.id ? (
-                      <div className="flex gap-1">
-                        <Button size="sm" onClick={() => saveEdit(manager.id)}>
+                      <div className="flex gap-2">
+                        <Button size="sm" onClick={handleSave} className="flex-1 text-xs">
+                          <Check className="h-3 w-3 mr-1" />
                           บันทึก
                         </Button>
-                        <Button size="sm" variant="outline" onClick={cancelEdit}>
+                        <Button size="sm" variant="outline" onClick={handleCancel} className="flex-1 text-xs">
+                          <X className="h-3 w-3 mr-1" />
                           ยกเลิก
                         </Button>
                       </div>
-                    ) : (
-                      <div className="flex gap-1">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => startEdit(manager)}
-                        >
-                          <Edit className="h-3 w-3" />
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div>
+                        <p className="font-medium text-sm">{manager.name}</p>
+                        <p className="text-xs text-muted-foreground">{manager.branch}</p>
+                        <p className="text-xs text-muted-foreground break-all">{manager.email}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => handleEdit(manager)} className="flex-1 text-xs">
+                          <Pencil className="h-3 w-3 mr-1" />
+                          แก้ไข
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => onDelete(manager.id)}
-                        >
-                          <Trash2 className="h-3 w-3" />
+                        <Button size="sm" variant="destructive" onClick={() => handleDelete(manager.id)} className="flex-1 text-xs">
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          ลบ
                         </Button>
                       </div>
-                    )}
-                  </TableCell>
-                </TableRow>
+                    </div>
+                  )}
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden sm:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-sm font-medium">ชื่อผู้จัดการ</TableHead>
+                    <TableHead className="text-sm font-medium">สาขา</TableHead>
+                    <TableHead className="text-sm font-medium">อีเมล</TableHead>
+                    <TableHead className="text-sm font-medium text-center">การจัดการ</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {managers.map((manager) => (
+                    <TableRow key={manager.id}>
+                      {editingId === manager.id ? (
+                        <>
+                          <TableCell>
+                            <Input
+                              value={editingData.name}
+                              onChange={(e) => setEditingData({ ...editingData, name: e.target.value })}
+                              className="text-sm"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              value={editingData.branch}
+                              onChange={(e) => setEditingData({ ...editingData, branch: e.target.value })}
+                              className="text-sm"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="email"
+                              value={editingData.email}
+                              onChange={(e) => setEditingData({ ...editingData, email: e.target.value })}
+                              className="text-sm"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1 justify-center">
+                              <Button size="sm" onClick={handleSave} className="text-xs px-2">
+                                <Check className="h-3 w-3" />
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={handleCancel} className="text-xs px-2">
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </>
+                      ) : (
+                        <>
+                          <TableCell className="font-medium text-sm">{manager.name}</TableCell>
+                          <TableCell className="text-sm">{manager.branch}</TableCell>
+                          <TableCell className="text-sm break-all">{manager.email}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1 justify-center">
+                              <Button size="sm" variant="outline" onClick={() => handleEdit(manager)} className="text-xs px-2">
+                                <Pencil className="h-3 w-3" />
+                              </Button>
+                              <Button size="sm" variant="destructive" onClick={() => handleDelete(manager.id)} className="text-xs px-2">
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </>
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>

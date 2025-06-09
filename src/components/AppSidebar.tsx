@@ -11,7 +11,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 const menuItems = [
@@ -36,24 +35,30 @@ export function AppSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar>
-      <SidebarHeader className="p-4">
+    <Sidebar className="border-r">
+      <SidebarHeader className="p-3 sm:p-4 md:p-6">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold">ระบบจัดการ</h2>
-          <SidebarTrigger />
+          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span className="text-xs sm:text-sm font-bold text-primary-foreground">ธ</span>
+          </div>
+          <span className="font-semibold text-sm sm:text-base md:text-lg">ธนาคารออมสิน</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>เมนูหลัก</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs sm:text-sm">เมนูหลัก</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location.pathname === item.url}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={location.pathname === item.url}
+                    className="text-sm sm:text-base"
+                  >
                     <Link to={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <span className="truncate">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
