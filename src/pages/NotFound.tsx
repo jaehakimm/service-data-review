@@ -1,25 +1,30 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
 
-const NotFound = () => {
-  const location = useLocation();
+import React from 'react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Home } from "lucide-react";
+import { Link } from "react-router-dom";
 
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
-
+const NotFound: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
-      </div>
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-6xl font-bold text-muted-foreground mb-4">404</CardTitle>
+          <h1 className="text-2xl font-bold">ไม่พบหน้าที่ร้องขอ</h1>
+          <p className="text-muted-foreground">
+            ขออภัย หน้าที่คุณกำลังค้นหาไม่มีอยู่
+          </p>
+        </CardHeader>
+        <CardContent className="text-center">
+          <Button asChild>
+            <Link to="/">
+              <Home className="h-4 w-4 mr-2" />
+              กลับสู่หน้าหลัก
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 };
