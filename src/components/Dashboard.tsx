@@ -380,26 +380,51 @@ const Dashboard: React.FC = () => {
                   <CardTitle className="text-lg sm:text-xl">การใช้บริการแต่ละประเภท</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 sm:p-6 pt-0">
-                  <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                      <Pie
-                        data={serviceTypeStats}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, value }) => `${value}`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {serviceTypeStats.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <div className="flex flex-col items-center">
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={serviceTypeStats}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, value, percent }) => `${(percent * 100).toFixed(0)}%`}
+                          outerRadius={100}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {serviceTypeStats.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip 
+                          formatter={(value, name) => [value, name]}
+                          labelStyle={{ color: '#374151' }}
+                          contentStyle={{ 
+                            backgroundColor: '#ffffff',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '8px',
+                            fontSize: '14px'
+                          }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    
+                    {/* Custom Legend */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4 w-full">
+                      {serviceTypeStats.map((entry, index) => (
+                        <div key={index} className="flex items-center gap-2 text-xs sm:text-sm">
+                          <div 
+                            className="w-3 h-3 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: entry.color }}
+                          />
+                          <span className="text-gray-700 leading-tight">
+                            {entry.name}: {entry.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -412,10 +437,9 @@ const Dashboard: React.FC = () => {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="w-[45%] text-xs sm:text-sm">รายการประเมิน</TableHead>
+                          <TableHead className="w-[60%] text-xs sm:text-sm">รายการประเมิน</TableHead>
                           <TableHead className="text-center text-xs sm:text-sm">คะแนน</TableHead>
                           <TableHead className="text-center text-xs sm:text-sm">%</TableHead>
-                          <TableHead className="w-[25%] text-xs sm:text-sm">แถบคะแนน</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -433,14 +457,6 @@ const Dashboard: React.FC = () => {
                               <span className="text-xs sm:text-sm font-medium">
                                 {Math.round((stat.score / 5) * 100)}%
                               </span>
-                            </TableCell>
-                            <TableCell>
-                              <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3">
-                                <div 
-                                  className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 sm:h-3 rounded-full transition-all duration-300"
-                                  style={{ width: `${(stat.score / 5) * 100}%` }}
-                                ></div>
-                              </div>
                             </TableCell>
                           </TableRow>
                         ))}
