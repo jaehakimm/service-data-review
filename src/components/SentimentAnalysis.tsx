@@ -560,10 +560,10 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({
               </div>
             </div>
 
-            {/* ประเภทปัญหา Filters - เหลือแค่ มี/ไม่มี */}
-            <div className="mt-4">
-              <label className="text-sm font-medium mb-3 block">ประเภทปัญหา (เลือกปัญหาได้มากกว่า 1 หัวข้อ)</label>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {/* ประเภทปัญหา Filters - เรียงใหม่ 2 แถว ของ 3 ปุ่ม */}
+            <div className="mt-6">
+              <label className="text-sm font-medium mb-4 block text-center">ประเภทปัญหา (เลือกปัญหาได้มากกว่า 1 หัวข้อ)</label>
+              <div className="grid grid-cols-3 gap-4 max-w-4xl mx-auto">
                 {[{
                 key: 'บริการช้า',
                 label: 'บริการช้า',
@@ -574,7 +574,7 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({
                 icon: '💻'
               }, {
                 key: 'serviceMind',
-                label: 'Service Mind',
+                label: 'Service Mind พนักงาน',
                 icon: '😞'
               }, {
                 key: 'แซงคิว',
@@ -590,18 +590,20 @@ const SentimentAnalysis: React.FC<SentimentAnalysisProps> = ({
                 icon: '❓'
               }].map(issue => {
                 const filterValue = filters[issue.key as keyof FilterState] as boolean;
-                return <div key={issue.key} className="flex flex-col gap-2">
-                      <span className="text-xs text-gray-600 text-center">{issue.icon}</span>
-                      <Button variant={filterValue ? "default" : "secondary"} size="sm" onClick={() => {
+                return <div key={issue.key} className="flex flex-col items-center">
+                      <Button variant={filterValue ? "default" : "secondary"} size="lg" onClick={() => {
                     setFilters(prev => ({
                       ...prev,
                       [issue.key]: !filterValue
                     }));
-                  }} className={cn("h-12 text-xs font-medium transition-all duration-200 flex flex-col gap-1", filterValue ? "bg-green-600 hover:bg-green-700 text-white border-green-600" : "bg-red-100 hover:bg-red-200 text-red-800 border-red-300")}>
-                        <div className="text-center leading-tight">
+                  }} className={cn("w-full min-h-[100px] text-sm font-medium transition-all duration-200 flex flex-col items-center justify-center gap-2 p-4", filterValue ? "bg-green-600 hover:bg-green-700 text-white border-green-600 shadow-lg" : "bg-red-100 hover:bg-red-200 text-red-800 border-red-300")}>
+                        <div className="text-2xl mb-1">{issue.icon}</div>
+                        <div className="text-center leading-tight font-semibold text-xs">
                           {issue.label}
                         </div>
-                        <div className="text-xs opacity-80">
+                        <div className="text-xs opacity-90 font-medium px-2 py-1 rounded-full" style={{
+                      backgroundColor: filterValue ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
+                    }}>
                           {filterValue ? "มี" : "ไม่มี"}
                         </div>
                       </Button>
