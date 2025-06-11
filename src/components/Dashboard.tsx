@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -175,22 +176,22 @@ const Dashboard: React.FC = () => {
   }, [filteredData]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 p-3 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
               Dashboard วิเคราะห์ความพึงพอใจลูกค้า
             </h1>
-            <p className="text-xl text-gray-600">
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600">
               ธนาคารออมสิน - วิเคราะห์ข้อมูลการให้บริการและความพึงพอใจ
             </p>
           </div>
           <Button
             variant="outline"
             onClick={() => setCurrentStep('upload')}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-full sm:w-auto text-sm sm:text-base"
           >
             <RotateCcw className="h-4 w-4" />
             อัปโหลดข้อมูลใหม่
@@ -198,16 +199,16 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Filters */}
-        <Card className="mb-8 shadow-lg">
-          <CardHeader>
-            <CardTitle>ตัวกรองข้อมูล</CardTitle>
+        <Card className="mb-6 sm:mb-8 shadow-lg">
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl">ตัวกรองข้อมูล</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">ภาค</label>
                 <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm">
                     <SelectValue placeholder="เลือกภาค" />
                   </SelectTrigger>
                   <SelectContent>
@@ -222,7 +223,7 @@ const Dashboard: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium mb-2">เขต</label>
                 <Select value={selectedZone} onValueChange={setSelectedZone}>
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm">
                     <SelectValue placeholder="เลือกเขต" />
                   </SelectTrigger>
                   <SelectContent>
@@ -237,7 +238,7 @@ const Dashboard: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium mb-2">หน่วยให้บริการ</label>
                 <Select value={selectedUnit} onValueChange={setSelectedUnit}>
-                  <SelectTrigger>
+                  <SelectTrigger className="text-sm">
                     <SelectValue placeholder="เลือกหน่วยให้บริการ" />
                   </SelectTrigger>
                   <SelectContent>
@@ -256,7 +257,7 @@ const Dashboard: React.FC = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal",
+                        "w-full justify-start text-left font-normal text-sm",
                         !startDate && "text-muted-foreground"
                       )}
                     >
@@ -283,7 +284,7 @@ const Dashboard: React.FC = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal",
+                        "w-full justify-start text-left font-normal text-sm",
                         !endDate && "text-muted-foreground"
                       )}
                     >
@@ -304,7 +305,7 @@ const Dashboard: React.FC = () => {
               </div>
               
               <div className="flex items-end">
-                <Button onClick={resetFilters} variant="outline" className="w-full">
+                <Button onClick={resetFilters} variant="outline" className="w-full text-sm">
                   ล้างตัวกรอง
                 </Button>
               </div>
@@ -313,73 +314,73 @@ const Dashboard: React.FC = () => {
         </Card>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card className="shadow-lg">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center">
-                <Users className="h-12 w-12 text-blue-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold text-gray-900">{filteredData.length}</p>
-                  <p className="text-gray-600">รายการบริการ</p>
+                <Users className="h-10 w-10 sm:h-12 sm:w-12 text-blue-600" />
+                <div className="ml-3 sm:ml-4">
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{filteredData.length}</p>
+                  <p className="text-sm sm:text-base text-gray-600">รายการบริการ</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
           <Card className="shadow-lg">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center">
-                <Star className="h-12 w-12 text-yellow-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold text-gray-900">{overallSatisfaction}</p>
-                  <p className="text-gray-600">คะแนนเฉลี่ย</p>
+                <Star className="h-10 w-10 sm:h-12 sm:w-12 text-yellow-600" />
+                <div className="ml-3 sm:ml-4">
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{overallSatisfaction}</p>
+                  <p className="text-sm sm:text-base text-gray-600">คะแนนเฉลี่ย</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
           <Card className="shadow-lg">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center">
-                <TrendingUp className="h-12 w-12 text-green-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold text-gray-900">{serviceTypeStats.reduce((sum, s) => sum + s.value, 0)}</p>
-                  <p className="text-gray-600">การใช้บริการรวม</p>
+                <TrendingUp className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />
+                <div className="ml-3 sm:ml-4">
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{serviceTypeStats.reduce((sum, s) => sum + s.value, 0)}</p>
+                  <p className="text-sm sm:text-base text-gray-600">การใช้บริการรวม</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
           <Card className="shadow-lg">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center">
-                <Phone className="h-12 w-12 text-purple-600" />
-                <div className="ml-4">
-                  <p className="text-2xl font-bold text-gray-900">{callbackRequests.length}</p>
-                  <p className="text-gray-600">ขอติดต่อกลับ</p>
+                <Phone className="h-10 w-10 sm:h-12 sm:w-12 text-purple-600" />
+                <div className="ml-3 sm:ml-4">
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{callbackRequests.length}</p>
+                  <p className="text-sm sm:text-base text-gray-600">ขอติดต่อกลับ</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">ภาพรวม</TabsTrigger>
-            <TabsTrigger value="satisfaction">ความพึงพอใจ</TabsTrigger>
-            <TabsTrigger value="sentiment">Sentiment Analysis</TabsTrigger>
-            <TabsTrigger value="regional">เปรียบเทียบภาค</TabsTrigger>
-            <TabsTrigger value="feedback">ความคิดเห็น</TabsTrigger>
+        <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 h-auto p-1">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 py-2 sm:px-4">ภาพรวม</TabsTrigger>
+            <TabsTrigger value="satisfaction" className="text-xs sm:text-sm px-2 py-2 sm:px-4">ความพึงพอใจ</TabsTrigger>
+            <TabsTrigger value="sentiment" className="text-xs sm:text-sm px-2 py-2 sm:px-4">Sentiment</TabsTrigger>
+            <TabsTrigger value="regional" className="text-xs sm:text-sm px-2 py-2 sm:px-4">เปรียบเทียบภาค</TabsTrigger>
+            <TabsTrigger value="feedback" className="text-xs sm:text-sm px-2 py-2 sm:px-4">ความคิดเห็น</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="overview" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle>การใช้บริการแต่ละประเภท</CardTitle>
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-lg sm:text-xl">การใช้บริการแต่ละประเภท</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
+                <CardContent className="p-4 sm:p-6 pt-0">
+                  <ResponsiveContainer width="100%" height={250}>
                     <PieChart>
                       <Pie
                         data={serviceTypeStats}
@@ -403,65 +404,67 @@ const Dashboard: React.FC = () => {
               </Card>
 
               <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle>คะแนนความพึงพอใจรายด้าน</CardTitle>
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-lg sm:text-xl">คะแนนความพึงพอใจรายด้าน</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[60%]">รายการประเมิน</TableHead>
-                        <TableHead className="text-center">คะแนน</TableHead>
-                        <TableHead className="text-center">เปอร์เซ็นต์</TableHead>
-                        <TableHead className="w-[25%]">แถบคะแนน</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {satisfactionStats.map((stat, index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium text-sm">
-                            {stat.name}
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <Badge variant="outline" className="font-bold">
-                              {stat.score}/5
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <span className="text-sm font-medium">
-                              {Math.round((stat.score / 5) * 100)}%
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <div className="w-full bg-gray-200 rounded-full h-3">
-                              <div 
-                                className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-300"
-                                style={{ width: `${(stat.score / 5) * 100}%` }}
-                              ></div>
-                            </div>
-                          </TableCell>
+                <CardContent className="p-4 sm:p-6 pt-0">
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[45%] text-xs sm:text-sm">รายการประเมิน</TableHead>
+                          <TableHead className="text-center text-xs sm:text-sm">คะแนน</TableHead>
+                          <TableHead className="text-center text-xs sm:text-sm">%</TableHead>
+                          <TableHead className="w-[25%] text-xs sm:text-sm">แถบคะแนน</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {satisfactionStats.map((stat, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium text-xs sm:text-sm">
+                              {stat.name}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <Badge variant="outline" className="font-bold text-xs">
+                                {stat.score}/5
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <span className="text-xs sm:text-sm font-medium">
+                                {Math.round((stat.score / 5) * 100)}%
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <div className="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                                <div 
+                                  className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 sm:h-3 rounded-full transition-all duration-300"
+                                  style={{ width: `${(stat.score / 5) * 100}%` }}
+                                ></div>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          <TabsContent value="satisfaction" className="space-y-6">
+          <TabsContent value="satisfaction" className="space-y-4 sm:space-y-6">
             <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle>รายละเอียดคะแนนความพึงพอใจ</CardTitle>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl">รายละเอียดคะแนนความพึงพอใจ</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <CardContent className="p-4 sm:p-6 pt-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   {satisfactionStats.map((stat, index) => (
-                    <div key={index} className="p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-purple-50">
-                      <h4 className="font-medium text-gray-800 mb-2">{stat.name}</h4>
+                    <div key={index} className="p-3 sm:p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-purple-50">
+                      <h4 className="font-medium text-gray-800 mb-2 text-sm sm:text-base">{stat.name}</h4>
                       <div className="flex items-center">
-                        <span className="text-2xl font-bold text-blue-600">{stat.score}</span>
-                        <span className="text-gray-500 ml-1">/5</span>
+                        <span className="text-xl sm:text-2xl font-bold text-blue-600">{stat.score}</span>
+                        <span className="text-gray-500 ml-1 text-sm sm:text-base">/5</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                         <div 
@@ -476,52 +479,54 @@ const Dashboard: React.FC = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="sentiment" className="space-y-6">
+          <TabsContent value="sentiment" className="space-y-4 sm:space-y-6">
             <SentimentAnalysis data={filteredData} />
           </TabsContent>
 
-          <TabsContent value="regional" className="space-y-6">
+          <TabsContent value="regional" className="space-y-4 sm:space-y-6">
             <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle>เปรียบเทียบผลการให้บริการแต่ละภาค</CardTitle>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl">เปรียบเทียบผลการให้บริการแต่ละภาค</CardTitle>
               </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={regionalComparison}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis yAxisId="left" orientation="left" />
-                    <YAxis yAxisId="right" orientation="right" />
-                    <Tooltip />
-                    <Legend />
-                    <Bar yAxisId="left" dataKey="satisfaction" fill="#8884d8" name="คะแนนเฉลี่ย" />
-                    <Bar yAxisId="right" dataKey="totalService" fill="#82ca9d" name="การใช้บริการรวม" />
-                  </BarChart>
-                </ResponsiveContainer>
+              <CardContent className="p-4 sm:p-6 pt-0">
+                <div className="overflow-x-auto">
+                  <ResponsiveContainer width="100%" height={350}>
+                    <BarChart data={regionalComparison}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" fontSize={12} />
+                      <YAxis yAxisId="left" orientation="left" fontSize={12} />
+                      <YAxis yAxisId="right" orientation="right" fontSize={12} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar yAxisId="left" dataKey="satisfaction" fill="#8884d8" name="คะแนนเฉลี่ย" />
+                      <Bar yAxisId="right" dataKey="totalService" fill="#82ca9d" name="การใช้บริการรวม" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </CardContent>
             </Card>
 
             <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle>สรุปข้อมูลแต่ละภาค</CardTitle>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl">สรุปข้อมูลแต่ละภาค</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <CardContent className="p-4 sm:p-6 pt-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   {regionalComparison.map((region, index) => (
-                    <div key={index} className="p-4 border rounded-lg bg-white shadow-sm">
-                      <h4 className="font-semibold text-lg text-gray-800 mb-3">{region.name}</h4>
+                    <div key={index} className="p-3 sm:p-4 border rounded-lg bg-white shadow-sm">
+                      <h4 className="font-semibold text-base sm:text-lg text-gray-800 mb-3">{region.name}</h4>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">คะแนนเฉลี่ย:</span>
-                          <Badge variant="outline">{region.satisfaction}</Badge>
+                          <span className="text-gray-600 text-sm sm:text-base">คะแนนเฉลี่ย:</span>
+                          <Badge variant="outline" className="text-xs sm:text-sm">{region.satisfaction}</Badge>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">การใช้บริการ:</span>
-                          <Badge variant="outline">{region.totalService}</Badge>
+                          <span className="text-gray-600 text-sm sm:text-base">การใช้บริการ:</span>
+                          <Badge variant="outline" className="text-xs sm:text-sm">{region.totalService}</Badge>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">หน่วยให้บริการ:</span>
-                          <Badge variant="outline">{region.units}</Badge>
+                          <span className="text-gray-600 text-sm sm:text-base">หน่วยให้บริการ:</span>
+                          <Badge variant="outline" className="text-xs sm:text-sm">{region.units}</Badge>
                         </div>
                       </div>
                     </div>
@@ -531,28 +536,28 @@ const Dashboard: React.FC = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="feedback" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TabsContent value="feedback" className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle>ความคิดเห็นจากลูกค้า</CardTitle>
-                  <Badge variant="outline">{customerFeedback.length} รายการ</Badge>
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-lg sm:text-xl">ความคิดเห็นจากลูกค้า</CardTitle>
+                  <Badge variant="outline" className="text-xs sm:text-sm">{customerFeedback.length} รายการ</Badge>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                <CardContent className="p-4 sm:p-6 pt-0">
+                  <div className="space-y-3 sm:space-y-4 max-h-80 sm:max-h-96 overflow-y-auto">
                     {customerFeedback.map((item, index) => (
                       <div key={index} className="p-3 bg-gray-50 rounded-lg border">
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge variant="outline" className="text-xs">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-2">
+                          <Badge variant="outline" className="text-xs self-start">
                             {item.หน่วยให้บริการ} - {item.เขต}
                           </Badge>
                           <span className="text-xs text-gray-500">{item.วันที่}</span>
                         </div>
-                        <p className="text-sm text-gray-700">{item.หมายเหตุ}</p>
+                        <p className="text-xs sm:text-sm text-gray-700">{item.หมายเหตุ}</p>
                       </div>
                     ))}
                     {customerFeedback.length === 0 && (
-                      <div className="text-center text-gray-500 py-8">
+                      <div className="text-center text-gray-500 py-6 sm:py-8 text-sm sm:text-base">
                         ไม่มีความคิดเห็นจากลูกค้า
                       </div>
                     )}
@@ -561,33 +566,33 @@ const Dashboard: React.FC = () => {
               </Card>
 
               <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle>รายการขอติดต่อกลับ</CardTitle>
-                  <Badge variant="destructive">{callbackRequests.length} รายการ</Badge>
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-lg sm:text-xl">รายการขอติดต่อกลับ</CardTitle>
+                  <Badge variant="destructive" className="text-xs sm:text-sm">{callbackRequests.length} รายการ</Badge>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                <CardContent className="p-4 sm:p-6 pt-0">
+                  <div className="space-y-3 sm:space-y-4 max-h-80 sm:max-h-96 overflow-y-auto">
                     {callbackRequests.map((item, index) => (
                       <div key={index} className="p-3 bg-red-50 rounded-lg border border-red-200">
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge variant="outline" className="text-xs">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 gap-2">
+                          <Badge variant="outline" className="text-xs self-start">
                             {item.หน่วยให้บริการ} - {item.เขต}
                           </Badge>
                           <span className="text-xs text-gray-500">{item.วันที่}</span>
                         </div>
-                        <p className="text-sm text-gray-700 font-medium">
-                          <Phone className="inline h-4 w-4 mr-1" />
+                        <p className="text-xs sm:text-sm text-gray-700 font-medium">
+                          <Phone className="inline h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                           {item.ลูกค้าต้องการให้ติดต่อกลับ}
                         </p>
                         {item.หมายเหตุ && (
-                          <p className="text-sm text-gray-600 mt-2">
+                          <p className="text-xs sm:text-sm text-gray-600 mt-2">
                             หมายเหตุ: {item.หมายเหตุ}
                           </p>
                         )}
                       </div>
                     ))}
                     {callbackRequests.length === 0 && (
-                      <div className="text-center text-gray-500 py-8">
+                      <div className="text-center text-gray-500 py-6 sm:py-8 text-sm sm:text-base">
                         ไม่มีรายการขอติดต่อกลับ
                       </div>
                     )}
